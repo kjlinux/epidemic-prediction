@@ -1,0 +1,123 @@
+.alert-panel {
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-title {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.alerts-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding-right: var(--spacing-xs);
+}
+
+.no-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  color: var(--gray-dark);
+  text-align: center;
+}
+
+.no-alerts-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.alert-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid;
+  background: var(--gray-light);
+  transition: all var(--transition-base);
+}
+
+.alert-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+}
+
+.alert-critical {
+  border-left-color: var(--risk-critical);
+  background: rgba(211, 47, 47, 0.05);
+}
+
+.alert-high {
+  border-left-color: var(--risk-high);
+  background: rgba(255, 82, 82, 0.05);
+}
+
+.alert-medium {
+  border-left-color: var(--orange-primary);
+  background: var(--orange-pale);
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.alert-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.alert-zone {
+  font-weight: var(--font-weight-semibold);
+  color: var(--black);
+  font-size: var(--font-size-sm);
+}
+
+.alert-time {
+  font-size: var(--font-size-xs);
+  color: var(--gray-dark);
+  font-style: italic;
+}
+
+.alert-message {
+  font-size: var(--font-size-sm);
+  color: var(--gray-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Scrollbar personnalisé pour la liste d'alertes */
+.alerts-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.alerts-list::-webkit-scrollbar-track {
+  background: var(--gray-light);
+  border-radius: var(--border-radius-sm);
+}
+
+.alerts-list::-webkit-scrollbar-thumb {
+  background: var(--orange-primary);
+  border-radius: var(--border-radius-sm);
+}
+
+.alerts-list::-webkit-scrollbar-thumb:hover {
+  background: var(--orange-dark);
+}

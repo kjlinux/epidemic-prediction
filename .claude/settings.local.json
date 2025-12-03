@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(if [ ! -d \"C:\\Users\\GHOST\\.claude\\plans\" ])",
+      "Bash(then mkdir -p \"C:\\Users\\GHOST\\.claude\\plans\")",
+      "Bash(fi)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm dev)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

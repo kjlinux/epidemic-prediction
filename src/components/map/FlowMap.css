@@ -1,0 +1,177 @@
+.flow-map-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.map-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: var(--gray-light);
+  gap: var(--spacing-md);
+}
+
+/* Tooltip personnalisé */
+.map-tooltip {
+  padding: var(--spacing-md);
+  min-width: 200px;
+}
+
+.map-tooltip h4 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--orange-primary);
+  font-size: var(--font-size-base);
+  border-bottom: 2px solid var(--orange-primary);
+  padding-bottom: var(--spacing-xs);
+}
+
+.tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.tooltip-row span {
+  color: var(--gray-dark);
+}
+
+.tooltip-row strong {
+  color: var(--black);
+  font-family: var(--font-mono);
+}
+
+.risk-score-high {
+  color: var(--risk-high);
+}
+
+.risk-score-medium {
+  color: var(--orange-primary);
+}
+
+.risk-score-low {
+  color: var(--risk-very-low);
+}
+
+/* Légende */
+.map-legend {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.95);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  max-width: 250px;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.legend-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--black);
+}
+
+.legend-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.legend-section:last-of-type {
+  margin-bottom: var(--spacing-sm);
+}
+
+.legend-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--gray-dark);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--black);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-line {
+  width: 30px;
+  height: 2px;
+  background: var(--orange-primary);
+  flex-shrink: 0;
+}
+
+.legend-line-thin {
+  height: 1px;
+}
+
+.legend-line-thick {
+  height: 4px;
+}
+
+.legend-note {
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--gray-medium);
+  font-size: var(--font-size-xs);
+  color: var(--gray-dark);
+  line-height: 1.4;
+}
+
+.legend-note strong {
+  color: var(--orange-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .flow-map-container {
+    height: 400px;
+  }
+
+  .map-legend {
+    top: auto;
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+    max-width: 200px;
+    padding: var(--spacing-sm);
+  }
+
+  .legend-title {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Override mapbox controls */
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right {
+  display: none;
+}
