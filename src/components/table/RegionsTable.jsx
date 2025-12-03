@@ -19,6 +19,24 @@ function getVariationClass(variation) {
   return '';
 }
 
+/**
+ * ✅ PHASE 4 : Retourne la classe CSS selon la probabilité
+ */
+function getProbabilityClass(prob) {
+  if (prob < 30) return 'low-risk';       // Vert
+  if (prob < 50) return 'medium-risk';    // Orange
+  return 'high-risk';                     // Rouge
+}
+
+/**
+ * ✅ PHASE 4 : Retourne l'icône selon la probabilité
+ */
+function getProbabilityIcon(prob) {
+  if (prob < 30) return '';
+  if (prob < 50) return '';
+  return '';
+}
+
 export function RegionsTable() {
   // État local
   const [searchTerm, setSearchTerm] = useState('');
@@ -53,8 +71,19 @@ export function RegionsTable() {
 
     // 2. Trier selon la colonne active
     const sorted = [...filtered].sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
+      let aValue, bValue;
+
+      // ✅ PHASE 4 : Gestion des propriétés imbriquées
+      if (sortBy === 'prediction7d') {
+        aValue = a.prediction7d?.prediction || 0;
+        bValue = b.prediction7d?.prediction || 0;
+      } else if (sortBy === 'transitionProb') {
+        aValue = a.transitionProb?.probability || 0;
+        bValue = b.transitionProb?.probability || 0;
+      } else {
+        aValue = a[sortBy];
+        bValue = b[sortBy];
+      }
 
       // Gestion des chaînes (nom)
       if (typeof aValue === 'string') {
@@ -124,11 +153,17 @@ export function RegionsTable() {
               <th className="col-variation" onClick={() => handleSort('variation24h')}>
                 Variation 24h {getSortIcon('variation24h')}
               </th>
+              <th className="col-prediction" onClick={() => handleSort('prediction7d')}>
+                Cas Prédits J+7 {getSortIcon('prediction7d')}
+              </th>
+              <th className="col-transition" onClick={() => handleSort('transitionProb')}>
+                Prob. Transition {getSortIcon('transitionProb')}
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colSpan="4" style={{ padding: 0, border: 'none' }}>
+              <td colSpan="6" style={{ padding: 0, border: 'none' }}>
                 <div
                   className="table-body-container"
                   style={{
@@ -161,6 +196,22 @@ export function RegionsTable() {
                         <div className={`col-variation ${getVariationClass(zone.variation24h)}`}>
                           {zone.variation24h > 0 && '+'}
                           {formatPercentage(zone.variation24h)}
+                        </div>
+                        <div className="col-prediction">
+                          <span className="prediction-value">
+                            {formatNumber(zone.prediction7d?.prediction || 0)}
+                          </span>
+                          <span className="confidence-interval">
+                            {zone.prediction7d?.upper > 0 && ` (±${formatNumber(zone.prediction7d.upper - zone.prediction7d.prediction)})`}
+                          </span>
+                        </div>
+                        <div className="col-transition">
+                          <span
+                            className={`probability-badge ${getProbabilityClass(zone.transitionProb?.probability || 0)}`}
+                            title={zone.transitionProb ? `Détails: Tendance ${zone.transitionProb.factors.trend}%, Affluence ${zone.transitionProb.factors.affluence}%, Risque ${zone.transitionProb.factors.risk}%, Capacité ${zone.transitionProb.factors.capacity}%` : ''}
+                          >
+                            {zone.transitionProb?.probability || 0}% {getProbabilityIcon(zone.transitionProb?.probability || 0)}
+                          </span>
                         </div>
                       </div>
                     );

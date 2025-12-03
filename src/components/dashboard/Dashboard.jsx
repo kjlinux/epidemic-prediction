@@ -12,6 +12,8 @@ import { FlowMap } from '../map/FlowMap.jsx';
 import { TimeSeriesChart } from '../charts/TimeSeriesChart.jsx';
 import { MobilityFlowChart } from '../charts/MobilityFlowChart.jsx';
 import { RegionsTable } from '../table/RegionsTable.jsx';
+import MultiCityEvolutionChart from '../charts/MultiCityEvolutionChart.jsx';
+import RiskHeatmap from '../charts/RiskHeatmap.jsx';
 import './Dashboard.css';
 
 export function Dashboard() {
@@ -55,6 +57,12 @@ export function Dashboard() {
 
           {/* Tableau de toutes les régions - Pleine largeur */}
           <RegionsTable />
+
+          {/* Nouveaux graphiques temps réel - Phase 5 */}
+          <div className="charts-grid new-charts-section">
+            <MultiCityEvolutionChart />
+            <RiskHeatmap />
+          </div>
         </div>
       </main>
     </div>

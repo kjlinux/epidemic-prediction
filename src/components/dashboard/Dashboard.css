@@ -87,6 +87,11 @@
   margin-top: var(--spacing-xl);
 }
 
+/* New Charts Section - Phase 5 */
+.new-charts-section {
+  margin-top: var(--spacing-xl);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard-main {

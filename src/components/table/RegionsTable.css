@@ -1,19 +1,21 @@
 /**
  * Styles pour le tableau virtualisé des régions
  * Palette: Orange (#fa7e19), Noir (#000000), Gris (#F7F7F7)
+ * ✅ PHASE 5 : Améliorations visuelles + colonnes prédiction/transition
  */
 
 /* ===== Container principal ===== */
 .regions-table-container {
-  background: white;
-  border-radius: var(--border-radius);
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   height: 100%;
   margin-top: var(--spacing-xl);
   width: 100%;
+  transition: box-shadow var(--transition-base);
 }
 
 /* ===== Header avec recherche ===== */
@@ -21,17 +23,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 2px solid var(--color-orange);
-  background: white;
-  gap: 1rem;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-bottom: 3px solid #fa7e19;
+  background: var(--white);
+  gap: var(--spacing-lg);
 }
 
 .table-header h3 {
   margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-black);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--black);
 }
 
 .table-search {
@@ -55,10 +57,10 @@
 
 /* ===== Conteneur scrollable ===== */
 .table-scroll-container {
-  height: 500px;
+  height: 550px;
   overflow: auto;
   position: relative;
-  background: white;
+  background: var(--white);
 }
 
 /* Scrollbar personnalisée */
@@ -91,8 +93,9 @@
 .regions-table thead {
   position: sticky;
   top: 0;
-  background: var(--color-gray-light);
+  background: #f5f5f5;
   z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Conteneur du corps du tableau */
@@ -102,19 +105,22 @@
 }
 
 .regions-table th {
-  padding: 0.75rem 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
   text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--color-black);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.8125rem;
+  color: var(--black);
   cursor: pointer;
   user-select: none;
-  border-bottom: 2px solid var(--color-orange);
-  transition: background 0.2s ease;
+  border-bottom: 2px solid #fa7e19;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 .regions-table th:hover {
-  background: #e0e0e0;
+  background: #e8e8e8;
+  color: #fa7e19;
 }
 
 /* Cellules */
@@ -127,59 +133,125 @@
 
 /* Wrapper de ligne (pour virtualisation) */
 .table-row-wrapper {
-  transition: background 0.15s ease;
+  transition: all var(--transition-fast);
   display: flex;
   width: 100%;
   border-bottom: 1px solid #f0f0f0;
   align-items: center;
-  background: white;
+  background: var(--white);
 }
 
 .table-row-wrapper:hover {
-  background: var(--color-gray-light);
+  background: #fafafa;
+  box-shadow: inset 0 0 0 1px rgba(250, 126, 25, 0.1);
+  transform: translateX(2px);
 }
 
 .table-row-wrapper > div {
-  padding: 0.75rem 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
   font-size: 0.875rem;
-  color: var(--color-black);
+  color: var(--black);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.5;
 }
 
-/* ===== Colonnes spécifiques ===== */
+/* ===== Colonnes spécifiques (6 colonnes total) ===== */
 .col-name {
-  width: 35%;
-  min-width: 35%;
-  max-width: 35%;
-  font-weight: 500;
+  width: 18%;
+  min-width: 18%;
+  max-width: 18%;
+  font-weight: var(--font-weight-semibold);
+  color: var(--black);
 }
 
 .col-population {
-  width: 25%;
-  min-width: 25%;
-  max-width: 25%;
+  width: 13%;
+  min-width: 13%;
+  max-width: 13%;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  color: #666;
 }
 
 .col-cases {
-  width: 20%;
-  min-width: 20%;
-  max-width: 20%;
+  width: 13%;
+  min-width: 13%;
+  max-width: 13%;
   text-align: right;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   font-variant-numeric: tabular-nums;
+  color: var(--black);
 }
 
 .col-variation {
-  width: 20%;
-  min-width: 20%;
-  max-width: 20%;
+  width: 14%;
+  min-width: 14%;
+  max-width: 14%;
   text-align: right;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   font-variant-numeric: tabular-nums;
+}
+
+/* ✅ PHASE 4 : Nouvelles colonnes prédictives */
+.col-prediction {
+  width: 21%;
+  min-width: 21%;
+  max-width: 21%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.prediction-value {
+  font-weight: var(--font-weight-bold);
+  color: #fa7e19;
+  font-size: 0.9375rem;
+}
+
+.confidence-interval {
+  font-size: 0.75rem;
+  color: #999;
+  margin-left: 0.25rem;
+}
+
+.col-transition {
+  width: 21%;
+  min-width: 21%;
+  max-width: 21%;
+  text-align: center;
+}
+
+.probability-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-bold);
+  font-size: 0.875rem;
+  cursor: help;
+  transition: all var(--transition-fast);
+}
+
+.probability-badge.low-risk {
+  background: #4caf50;
+  color: white;
+}
+
+.probability-badge.medium-risk {
+  background: #ff9800;
+  color: white;
+}
+
+.probability-badge.high-risk {
+  background: #ff5252;
+  color: white;
+}
+
+.probability-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ===== Variation 24h (couleurs) ===== */
@@ -239,33 +311,40 @@
 /* Tablette */
 @media (max-width: 1024px) {
   .table-scroll-container {
-    height: 450px;
+    height: 500px;
   }
 
   .table-header {
-    padding: 1rem;
+    padding: var(--spacing-md);
   }
 
   .table-search {
     width: 200px;
+  }
+
+  /* Réduire légèrement le padding sur tablette */
+  .regions-table th,
+  .table-row-wrapper > div {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.8125rem;
   }
 }
 
 /* Mobile */
 @media (max-width: 768px) {
   .table-scroll-container {
-    height: 400px;
+    height: 450px;
   }
 
   .table-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 0.75rem;
-    padding: 0.875rem;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
   }
 
   .table-header h3 {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 
   .table-search {
@@ -277,75 +356,100 @@
   }
 
   .regions-table th,
-  .regions-table td {
-    padding: 0.5rem 0.75rem;
-  }
-
-  /* Ajuster les largeurs de colonnes sur mobile */
-  .col-name {
-    width: 30%;
-  }
-
-  .col-population {
-    width: 25%;
+  .table-row-wrapper > div {
+    padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.75rem;
+  }
+
+  /* Masquer population et variation sur mobile */
+  .col-population,
+  .col-variation {
+    display: none;
+  }
+
+  /* Réajuster les largeurs des colonnes visibles */
+  .col-name {
+    width: 25%;
+    min-width: 25%;
+    max-width: 25%;
   }
 
   .col-cases {
     width: 20%;
+    min-width: 20%;
+    max-width: 20%;
   }
 
-  .col-variation {
-    width: 15%;
+  .col-prediction {
+    width: 27%;
+    min-width: 27%;
+    max-width: 27%;
+  }
+
+  .col-transition {
+    width: 28%;
+    min-width: 28%;
+    max-width: 28%;
+  }
+
+  .prediction-value {
+    font-size: 0.8125rem;
+  }
+
+  .confidence-interval {
+    font-size: 0.6875rem;
+  }
+
+  .probability-badge {
+    padding: 0.375rem 0.625rem;
     font-size: 0.75rem;
-  }
-
-  .col-risk {
-    width: 10%;
-  }
-
-  .badge {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    min-width: 40px;
   }
 }
 
 /* Très petit mobile */
 @media (max-width: 480px) {
   .table-scroll-container {
-    height: 350px;
+    height: 400px;
   }
 
   .regions-table th,
-  .regions-table td {
-    padding: 0.375rem 0.5rem;
+  .table-row-wrapper > div {
+    padding: var(--spacing-xs) var(--spacing-xs);
+    font-size: 0.6875rem;
   }
 
   .table-header h3 {
     font-size: 0.9375rem;
   }
 
-  /* Masquer la colonne population sur très petits écrans */
-  .col-population {
+  /* Sur très petit mobile, masquer également la prédiction */
+  .col-prediction {
     display: none;
   }
 
-  /* Réajuster les largeurs */
+  /* Réajuster les largeurs pour 3 colonnes */
   .col-name {
-    width: 35%;
+    width: 40%;
+    min-width: 40%;
+    max-width: 40%;
   }
 
   .col-cases {
-    width: 25%;
+    width: 30%;
+    min-width: 30%;
+    max-width: 30%;
   }
 
-  .col-variation {
-    width: 20%;
+  .col-transition {
+    width: 30%;
+    min-width: 30%;
+    max-width: 30%;
   }
 
-  .col-risk {
-    width: 20%;
+  .probability-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6875rem;
+    gap: 0.25rem;
   }
 }
 

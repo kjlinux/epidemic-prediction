@@ -23,6 +23,9 @@ export class EpidemicSimulation {
       ...params
     };
 
+    // ✅ PHASE 2 : Sélectionner les foyers épidémiques AVANT d'initialiser les zones
+    this.outbreakCityIds = this.selectInitialOutbreakCities(cities);
+
     // Initialisation des compartiments SEIR pour chaque ville
     this.zones = cities.map(city => this.initializeZone(city));
 
@@ -32,11 +35,40 @@ export class EpidemicSimulation {
   }
 
   /**
+   * Sélectionne les 5 villes les plus peuplées comme foyers épidémiques initiaux
+   */
+  selectInitialOutbreakCities(cities) {
+    // Trier par population décroissante
+    const sorted = [...cities].sort((a, b) => b.population - a.population);
+
+    // Prendre les 5 plus peuplées
+    const outbreakCities = sorted.slice(0, 5);
+
+    // Logging pour validation
+    console.log('🦠 Foyers épidémiques initiaux:',
+      outbreakCities.map(c => `${c.name} (${c.population.toLocaleString('fr-FR')} hab.)`).join(', ')
+    );
+
+    return new Set(outbreakCities.map(c => c.id));
+  }
+
+  /**
    * Initialise les compartiments SEIR d'une ville
+   * ✅ PHASE 2 : Initialisation différenciée pour foyers vs villes saines
    */
   initializeZone(city) {
-    // Patient zéro : 0.5% de la population initialement infectée
-    const initialInfected = city.population * 0.005;
+    const isOutbreakCity = this.outbreakCityIds.has(city.id);
+
+    // Initialisation différenciée
+    let initialInfected;
+    if (isOutbreakCity) {
+      // Foyers : 0.8-1.2% d'infections (variation aléatoire)
+      const randomFactor = 0.8 + Math.random() * 0.4;
+      initialInfected = city.population * 0.01 * randomFactor;
+    } else {
+      // Villes saines : 0 cas
+      initialInfected = 0;
+    }
 
     return {
       id: city.id,
@@ -44,6 +76,7 @@ export class EpidemicSimulation {
       population: city.population,
       coordinates: city.coordinates,
       centrality: city.centrality,
+      isOutbreakCity,  // ✅ Nouveau flag
 
       // Compartiments SEIR
       S: city.population - initialInfected, // Susceptibles
@@ -133,13 +166,22 @@ export class EpidemicSimulation {
   /**
    * Extrait les métriques pour le dashboard
    * @returns {Array} Métriques par zone
+   * ✅ PHASE 3 : Ajout de quarantineStatus
+   * ✅ PHASE 4 : Ajout de prediction7d et transitionProb
    */
   getMetrics() {
     return this.zones.map(zone => {
       const totalCases = zone.E + zone.I + zone.R;
       const activeCases = Math.round(zone.I);
       const prevalence = (zone.I / zone.population) * 100;
+
+      // ✅ Calculer riskScore localement AVANT de l'utiliser
       const riskScore = this.calculateRiskScore(zone);
+      const quarantineStatus = this.getQuarantineStatus(riskScore);
+
+      // ✅ PHASE 4 : Ajouter les prédictions
+      const prediction7d = this.getZonePrediction7d(zone.id);
+      const transitionProb = this.calculateTransitionProbability(zone);
 
       return {
         id: zone.id,
@@ -150,12 +192,27 @@ export class EpidemicSimulation {
         totalCases: Math.round(totalCases),
         prevalence: parseFloat(prevalence.toFixed(3)),
         riskScore,
+        quarantineStatus,  // ✅ Phase 3
+        prediction7d,       // ✅ Phase 4
+        transitionProb,     // ✅ Phase 4
         S: Math.round(zone.S),
         E: Math.round(zone.E),
         I: Math.round(zone.I),
-        R: Math.round(zone.R)
+        R: Math.round(zone.R),
+        history: zone.history  // ✅ Nécessaire pour les graphiques Phase 5
       };
     });
+  }
+
+  /**
+   * Détermine le statut de quarantaine selon le score de risque
+   * ✅ PHASE 3 : Nouvelle méthode
+   */
+  getQuarantineStatus(riskScore) {
+    if (riskScore >= 85) return 'strict';     // Quarantaine stricte
+    if (riskScore >= 60) return 'severe';     // Restrictions sévères
+    if (riskScore >= 40) return 'moderate';   // Restrictions modérées
+    return 'none';                            // Aucune restriction
   }
 
   /**
@@ -193,6 +250,157 @@ export class EpidemicSimulation {
     }
 
     return totalInflow;
+  }
+
+  /**
+   * Prédit le nombre de cas actifs dans une zone dans 7 jours
+   * ✅ PHASE 4 : Nouvelle méthode pour prédiction J+7
+   */
+  getZonePrediction7d(zoneId) {
+    const zone = this.zones.find(z => z.id === zoneId);
+
+    // Retourner un objet complet même en cas d'historique insuffisant
+    if (!zone || zone.history.I.length < 7) {
+      return {
+        prediction: 0,
+        lower: 0,
+        upper: 0,
+        confidence: 0
+      };
+    }
+
+    // 1. Tendance linéaire des 7 derniers jours
+    const last7Days = zone.history.I.slice(-7);
+    const avgGrowth = (last7Days[6] - last7Days[0]) / 7;
+
+    // 2. Impact de la mobilité entrante
+    const inflowFromInfectedZones = this.calculateInflowFromInfectedZones(zoneId);
+    const mobilityImpact = inflowFromInfectedZones * this.params.mu * 7;
+
+    // 3. Prédiction de base
+    let prediction = zone.I + (avgGrowth * 7) + mobilityImpact;
+
+    // 4. Ajustement selon le statut de quarantaine
+    const quarantineStatus = this.getQuarantineStatus(this.calculateRiskScore(zone));
+    if (quarantineStatus === 'strict') {
+      prediction *= 0.6;  // Réduction de 40% si quarantaine
+    } else if (quarantineStatus === 'severe') {
+      prediction *= 0.8;  // Réduction de 20% si restrictions sévères
+    }
+
+    // 5. Limites réalistes
+    prediction = Math.max(0, Math.min(prediction, zone.population * 0.15));
+
+    // 6. Intervalle de confiance (±15%)
+    const confidenceInterval = prediction * 0.15;
+
+    return {
+      prediction: Math.round(prediction),
+      lower: Math.round(prediction - confidenceInterval),
+      upper: Math.round(prediction + confidenceInterval),
+      confidence: 0.85  // 85% de confiance
+    };
+  }
+
+  /**
+   * Calcule l'afflux de cas depuis les zones infectées
+   * ✅ PHASE 4 : Méthode auxiliaire pour prédiction
+   */
+  calculateInflowFromInfectedZones(zoneId) {
+    let totalInflow = 0;
+    for (const originZone of this.zones) {
+      if (originZone.id === zoneId) continue;
+      const flow = getFlow(this.mobilityMatrix, originZone.id, zoneId);
+      const prevalence = originZone.I / originZone.population;
+      totalInflow += flow * prevalence;
+    }
+    return totalInflow;
+  }
+
+  /**
+   * Calcule la probabilité de transition vers un niveau de risque supérieur
+   * ✅ PHASE 4 : Nouvelle méthode pour probabilité de transition
+   */
+  calculateTransitionProbability(zone) {
+    const currentRisk = this.calculateRiskScore(zone);
+
+    // Gérer le cas où le risque est déjà maximal
+    if (currentRisk >= 85) {
+      return {
+        probability: 0,  // Pas de transition possible au-delà de critique
+        targetThreshold: 100,
+        factors: { trend: 0, affluence: 0, risk: 0, capacity: 0 }
+      };
+    }
+
+    // Déterminer la transition à calculer
+    let targetThreshold;
+    if (currentRisk < 40) {
+      targetThreshold = 40;  // Vert → Orange
+    } else if (currentRisk < 60) {
+      targetThreshold = 60;  // Orange → Rouge
+    } else {
+      targetThreshold = 85;  // Rouge → Critique
+    }
+
+    // Retourner un objet complet si historique insuffisant
+    if (zone.history.I.length < 7) {
+      return {
+        probability: 0,
+        targetThreshold,
+        factors: { trend: 0, affluence: 0, risk: 0, capacity: 0 }
+      };
+    }
+
+    // === Facteur 1 : Tendance (35%) ===
+    const last7Days = zone.history.I.slice(-7);
+
+    // Éviter division par zéro
+    let trendFactor = 0;
+    if (zone.I > 0) {
+      const avgDailyGrowth = (last7Days[6] - last7Days[0]) / (7 * zone.I);
+      trendFactor = Math.max(0, Math.min(avgDailyGrowth * 100, 1.0));  // Clamp entre [0, 1]
+    }
+
+    // === Facteur 2 : Affluence depuis zones à risque (25%) ===
+    const inflowFromRedZones = this.zones
+      .filter(z => this.calculateRiskScore(z) > 60)
+      .reduce((sum, z) => {
+        const flow = getFlow(this.mobilityMatrix, z.id, zone.id);
+        return sum + flow;
+      }, 0);
+    const totalInflow = this.zones
+      .filter(z => z.id !== zone.id)
+      .reduce((sum, z) => sum + getFlow(this.mobilityMatrix, z.id, zone.id), 0);
+    const affluenceFactor = totalInflow > 0 ? inflowFromRedZones / totalInflow : 0;
+
+    // === Facteur 3 : Proximité du seuil (25%) ===
+    const distanceToThreshold = targetThreshold - currentRisk;
+    const riskFactor = distanceToThreshold < 20
+      ? Math.max(0, 1 - (distanceToThreshold / 20))  // Plus proche = plus probable
+      : 0;
+
+    // === Facteur 4 : Capacité sanitaire (15%) ===
+    const capacityFactor = 1 - (zone.centrality / 100);  // Centralité faible = risque élevé
+
+    // === Calcul final ===
+    const probability = (
+      0.35 * trendFactor +
+      0.25 * affluenceFactor +
+      0.25 * riskFactor +
+      0.15 * capacityFactor
+    ) * 100;
+
+    return {
+      probability: Math.round(Math.min(probability, 99)),  // Max 99%
+      targetThreshold,
+      factors: {
+        trend: Math.round(trendFactor * 100),
+        affluence: Math.round(affluenceFactor * 100),
+        risk: Math.round(riskFactor * 100),
+        capacity: Math.round(capacityFactor * 100)
+      }
+    };
   }
 
   /**

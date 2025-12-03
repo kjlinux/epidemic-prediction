@@ -25,7 +25,8 @@ export const useSimulationStore = create((set, get) => ({
    * Initialise la simulation
    */
   initialize: () => {
-    const mobilityMatrix = generateMobilityMatrix(ivoryCoastCities, new Date());
+    const startDate = new Date('2025-12-01');
+    const mobilityMatrix = generateMobilityMatrix(ivoryCoastCities, startDate);
     const simulation = new EpidemicSimulation(ivoryCoastCities, mobilityMatrix);
 
     // Simuler 60 jours initiaux pour avoir de l'historique
@@ -144,47 +145,41 @@ export const useSimulationStore = create((set, get) => ({
   /**
    * Met à jour la matrice de mobilité en fonction des risques épidémiologiques
    * Les zones à haut risque voient leur mobilité réduite
+   * ✅ PHASE 3 : Quarantaine stricte à partir de risque ≥ 85
    */
   updateMobilityMatrix: (currentMetrics, currentDate) => {
     // Générer la matrice de base avec facteurs saisonniers
     const baseMobilityMatrix = generateMobilityMatrix(ivoryCoastCities, currentDate);
     const adjustedMatrix = new Map();
 
-    // Créer un index des risques par zone
-    const riskByZone = new Map();
-    currentMetrics.forEach(zone => {
-      riskByZone.set(zone.id, zone.riskScore);
-    });
+    // ✅ Fonction de réduction améliorée basée sur quarantineStatus
+    const getReductionFactor = (quarantineStatus) => {
+      switch (quarantineStatus) {
+        case 'none':     return 1.0;   // 100% mobilité
+        case 'moderate': return 0.7;   // -30%
+        case 'severe':   return 0.3;   // -70%
+        case 'strict':   return 0.05;  // -95% (QUARANTAINE)
+        default:         return 1.0;
+      }
+    };
 
-    // Ajuster chaque flux en fonction des niveaux de risque
+    // Ajuster chaque flux en fonction des statuts de quarantaine
     for (const [key, baseFlow] of baseMobilityMatrix.entries()) {
       const [originId, destId] = key.split('_');
-      const originRisk = riskByZone.get(originId) || 0;
-      const destRisk = riskByZone.get(destId) || 0;
+      const originMetrics = currentMetrics.find(m => m.id === originId);
+      const destMetrics = currentMetrics.find(m => m.id === destId);
 
-      // Facteur de réduction basé sur le risque
-      // Risque 0-30: pas de réduction (100%)
-      // Risque 30-60: réduction modérée (80%)
-      // Risque 60-80: réduction importante (50%)
-      // Risque 80+: réduction drastique (20%)
-      const getReductionFactor = (risk) => {
-        if (risk < 30) return 1.0;
-        if (risk < 60) return 0.8;
-        if (risk < 80) return 0.5;
-        return 0.2;
-      };
+      // ✅ Isolement total : bloquer flux entrants ET sortants
+      const originFactor = getReductionFactor(originMetrics?.quarantineStatus || 'none');
+      const destFactor = getReductionFactor(destMetrics?.quarantineStatus || 'none');
 
-      // Appliquer les deux facteurs (origine et destination)
-      const originFactor = getReductionFactor(originRisk);
-      const destFactor = getReductionFactor(destRisk);
+      // Utiliser le facteur le plus restrictif
+      const combinedFactor = Math.min(originFactor, destFactor);
 
-      // Le flux est réduit par le facteur le plus restrictif
-      const reductionFactor = Math.min(originFactor, destFactor);
+      const adjustedFlow = Math.round(baseFlow * combinedFactor);
 
-      const adjustedFlow = Math.round(baseFlow * reductionFactor);
-
-      // Seuil minimum pour garder le flux
-      if (adjustedFlow > 50) {
+      // ✅ Seuil minimum réduit pour garder le flux (10 au lieu de 50)
+      if (adjustedFlow > 10) {
         adjustedMatrix.set(key, adjustedFlow);
       }
     }
@@ -207,33 +202,60 @@ export const useSimulationStore = create((set, get) => ({
 
   /**
    * Génère des alertes basées sur les métriques
+   * ✅ PHASE 3 : Alertes de quarantaine ajoutées
    */
   generateAlerts: metrics => {
     const alerts = [];
     const now = new Date();
 
     metrics.forEach(zone => {
+      // ✅ PHASE 3 : Alerte de quarantaine stricte
+      if (zone.quarantineStatus === 'strict' && zone.riskScore >= 85) {
+        alerts.push({
+          id: `quarantine-${zone.id}-${Date.now()}`,
+          type: 'quarantine',
+          priority: 'critical',
+          zone: zone.name,
+          message: `Quarantaine stricte : ${zone.name} placée en isolement total (risque: ${zone.riskScore}/100)`,
+          timestamp: now,
+          data: { riskScore: zone.riskScore, quarantineStatus: zone.quarantineStatus }
+        });
+      }
+
+      // ✅ PHASE 3 : Alerte d'approche du seuil critique
+      if (zone.riskScore >= 80 && zone.riskScore < 85 && Math.random() < 0.25) {
+        alerts.push({
+          id: `warning-${zone.id}-${Date.now()}`,
+          type: 'warning',
+          priority: 'high',
+          zone: zone.name,
+          message: `Seuil critique approché : ${zone.name} - risque ${zone.riskScore}/100 - quarantaine imminente`,
+          timestamp: now,
+          data: { riskScore: zone.riskScore }
+        });
+      }
+
       // Alerte: Nouvelle zone à risque élevé
-      if (zone.riskScore > 85 && Math.random() < 0.3) {
+      if (zone.riskScore > 70 && zone.riskScore < 80 && Math.random() < 0.2) {
         alerts.push({
           id: `alert-${Date.now()}-${zone.id}`,
           type: 'risk',
-          priority: 'critical',
+          priority: 'high',
           zone: zone.name,
-          message: `Nouvelle zone à risque critique détectée: ${zone.name}`,
+          message: `Zone à risque élevé détectée: ${zone.name} (risque: ${zone.riskScore}/100)`,
           timestamp: now,
           data: { riskScore: zone.riskScore }
         });
       }
 
       // Alerte: Augmentation rapide des cas
-      if (zone.activeCases > zone.population * 0.05 && Math.random() < 0.2) {
+      if (zone.activeCases > zone.population * 0.05 && Math.random() < 0.15) {
         alerts.push({
           id: `alert-${Date.now()}-cases-${zone.id}`,
           type: 'cases',
-          priority: 'high',
+          priority: 'medium',
           zone: zone.name,
-          message: `Augmentation significative des cas à ${zone.name}: ${zone.activeCases} cas actifs`,
+          message: `Augmentation significative des cas à ${zone.name}: ${zone.activeCases.toLocaleString('fr-FR')} cas actifs`,
           timestamp: now,
           data: { activeCases: zone.activeCases }
         });
