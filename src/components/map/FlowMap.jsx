@@ -23,19 +23,19 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN ||
 const INITIAL_VIEW_STATE = {
   latitude: 7.5, // Centre de la Côte d'Ivoire
   longitude: -5.5,
-  zoom: 6.5,
+  zoom: 7.2, // Zoom plus rapproché pour remplir la vue
   pitch: 45, // Angle de vue 3D plus prononcé
   bearing: 0,
-  minZoom: 6, // Empêche de trop dézoomer
-  maxZoom: 10,
+  minZoom: 7, // Zoom minimum élevé pour ne voir que la Côte d'Ivoire
+  maxZoom: 11,
   minPitch: 0,
   maxPitch: 85 // Permet une vue presque à l'horizontale
 };
 
-// Limites géographiques de la Côte d'Ivoire
+// Limites géographiques strictes de la Côte d'Ivoire
 const IVORY_COAST_BOUNDS = [
-  [-8.7, 4.2], // Sud-Ouest [longitude, latitude]
-  [-2.4, 10.8] // Nord-Est [longitude, latitude]
+  [-8.6, 4.3], // Sud-Ouest [longitude, latitude]
+  [-2.5, 10.7] // Nord-Est [longitude, latitude]
 ];
 
 export function FlowMap() {
@@ -193,6 +193,9 @@ export function FlowMap() {
           style={{ width: '100%', height: '100%' }}
           maxBounds={IVORY_COAST_BOUNDS}
           renderWorldCopies={false}
+          projection="mercator"
+          attributionControl={false}
+          logoPosition="bottom-right"
         />
       </DeckGL>
 

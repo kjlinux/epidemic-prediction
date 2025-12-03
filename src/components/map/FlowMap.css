@@ -6,6 +6,20 @@
   overflow: hidden;
   box-shadow: var(--shadow-lg);
   margin-top: var(--spacing-xl);
+  background: #e8f0f8;
+}
+
+/* Masque pour focus sur la Côte d'Ivoire */
+.flow-map-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 80px 40px rgba(232, 240, 248, 0.6);
+  z-index: 1;
 }
 
 .map-loading {
@@ -78,7 +92,7 @@
   max-width: 250px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  z-index: 10;
+  z-index: 100;
 }
 
 .legend-title {
@@ -198,7 +212,7 @@
   box-shadow: var(--shadow-md);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  z-index: 10;
+  z-index: 100;
   display: flex;
   align-items: center;
   font-size: var(--font-size-xs);
