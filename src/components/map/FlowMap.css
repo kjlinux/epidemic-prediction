@@ -5,6 +5,7 @@
   border-radius: var(--border-radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
+  margin-top: var(--spacing-xl);
 }
 
 .map-loading {
@@ -75,6 +76,7 @@
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-md);
   max-width: 250px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   z-index: 10;
 }

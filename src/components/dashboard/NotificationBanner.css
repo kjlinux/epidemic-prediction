@@ -1,0 +1,108 @@
+.notification-banner {
+  position: relative;
+  background: linear-gradient(135deg, #fff5e6 0%, #ffffff 100%);
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(250, 126, 25, 0.2);
+  padding: var(--spacing-xs) var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  border-left: 3px solid var(--orange-primary);
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.notification-zone {
+  font-weight: var(--font-weight-semibold);
+  color: var(--black);
+  font-size: 0.8125rem;
+}
+
+.notification-time {
+  font-size: 0.7rem;
+  color: var(--gray-dark);
+  white-space: nowrap;
+}
+
+.notification-message {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--gray-dark);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notification-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--gray-dark);
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.notification-dismiss:hover {
+  background: var(--gray-light);
+  color: var(--black);
+}
+
+.notification-indicator {
+  flex-shrink: 0;
+  background: var(--orange-primary);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-banner {
+    max-width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .notification-content {
+    min-width: 0;
+  }
+
+  .notification-message {
+    font-size: var(--font-size-xs);
+  }
+}

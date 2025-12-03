@@ -6,21 +6,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSimulationStore } from '../../store/simulationStore.js';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { FaCircle, FaDotCircle, FaCheckCircle } from 'react-icons/fa';
 import './AlertPanel.css';
 
 export function AlertPanel() {
   const alerts = useSimulationStore(state => state.alerts);
 
   const getPriorityIcon = priority => {
+    const iconProps = { size: 16 };
     switch (priority) {
       case 'critical':
-        return '🔴';
+        return <FaCircle {...iconProps} color="#ff5252" />;
       case 'high':
-        return '🟠';
+        return <FaCircle {...iconProps} color="#fa7e19" />;
       case 'medium':
-        return '🟡';
+        return <FaCircle {...iconProps} color="#ffd700" />;
       default:
-        return '🔵';
+        return <FaCircle {...iconProps} color="#2196F3" />;
     }
   };
 
@@ -37,7 +39,7 @@ export function AlertPanel() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <span className="no-alerts-icon">✅</span>
+              <span className="no-alerts-icon"><FaCheckCircle size={24} color="#4caf50" /></span>
               <p>Aucune alerte pour le moment</p>
             </motion.div>
           ) : (

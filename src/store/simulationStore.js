@@ -37,10 +37,16 @@ export const useSimulationStore = create((set, get) => ({
     const global = simulation.getGlobalMetrics();
     const mobilityIndex = calculateMobilityIndex(mobilityMatrix);
 
+    // Ajouter variation24h = 0 pour l'initialisation
+    const metricsWithVariation = metrics.map(zone => ({
+      ...zone,
+      variation24h: 0
+    }));
+
     set({
       simulation,
       mobilityMatrix,
-      currentMetrics: metrics,
+      currentMetrics: metricsWithVariation,
       globalMetrics: global,
       mobilityIndex,
       isRunning: true,
@@ -55,21 +61,27 @@ export const useSimulationStore = create((set, get) => ({
    * Avance la simulation d'un jour
    */
   stepSimulation: () => {
-    const { simulation, currentDate } = get();
+    const { simulation, currentDate, currentMetrics: previousMetrics } = get();
     if (!simulation) return;
 
     const metrics = simulation.step();
     const global = simulation.getGlobalMetrics();
 
+    // Calculer variation 24h pour chaque zone
+    const metricsWithVariation = metrics.map(zone => {
+      const variation24h = get().calculateVariation24h(zone.id, zone.activeCases, previousMetrics);
+      return { ...zone, variation24h };
+    });
+
     // Générer des alertes si nécessaire
-    const newAlerts = get().generateAlerts(metrics);
+    const newAlerts = get().generateAlerts(metricsWithVariation);
 
     // Mise à jour de la date
     const nextDate = new Date(currentDate);
     nextDate.setDate(nextDate.getDate() + 1);
 
     set(state => ({
-      currentMetrics: metrics,
+      currentMetrics: metricsWithVariation,
       globalMetrics: global,
       currentDate: nextDate,
       alerts: [...state.alerts, ...newAlerts].slice(-10) // Garder 10 dernières alertes
@@ -114,6 +126,19 @@ export const useSimulationStore = create((set, get) => ({
         isRunning: true
       });
     }
+  },
+
+  /**
+   * Calcule la variation 24h d'une zone
+   */
+  calculateVariation24h: (zoneId, currentCases, previousMetrics) => {
+    if (!previousMetrics) return 0;
+
+    const previousZone = previousMetrics.find(m => m.id === zoneId);
+    if (!previousZone || previousZone.activeCases === 0) return 0;
+
+    const variation = ((currentCases - previousZone.activeCases) / previousZone.activeCases) * 100;
+    return parseFloat(variation.toFixed(1));
   },
 
   /**

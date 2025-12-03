@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { NotificationBanner } from './NotificationBanner.jsx';
 import './Header.css';
 
 export function Header() {
@@ -26,13 +27,18 @@ export function Header() {
           <h1 className="header-title">
             Système de Prédiction Épidémique
           </h1>
-          <p className="header-subtitle">Côte d'Ivoire - Modèle SEIR Métapopulationnel</p>
+          {/* <p className="header-subtitle">Côte d'Ivoire - Modèle SEIR Métapopulationnel</p> */}
+        </div>
+
+        {/* Notification Banner intégré dans le flux */}
+        <div className="header-center">
+          <NotificationBanner />
         </div>
 
         <div className="header-right">
           <div className="simulation-status">
             <span className="status-dot pulse-orange"></span>
-            <span className="status-text">Simulation Active</span>
+            <span className="status-text">Suivi temps réel</span>
           </div>
 
           <div className="current-time">

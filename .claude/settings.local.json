@@ -6,7 +6,10 @@
       "Bash(then mkdir -p \"C:\\Users\\GHOST\\.claude\\plans\")",
       "Bash(fi)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm dev)"
+      "Bash(pnpm dev)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm list:*)",
+      "Bash(pnpm run build:*)"
     ],
     "deny": [],
     "ask": []

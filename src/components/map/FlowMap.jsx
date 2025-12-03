@@ -5,12 +5,13 @@
 
 import { useMemo } from 'react';
 import DeckGL from '@deck.gl/react';
-import { Map } from 'react-map-gl';
+import { Map } from 'react-map-gl/mapbox';
 import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { useSimulationStore } from '../../store/simulationStore.js';
 import { getTopFlows } from '../../simulation/MobilityGenerator.js';
 import { ivoryCoastCities } from '../../data/ivoryCoastCities.js';
 import { getRiskColorRGBA } from '../../utils/colorUtils.js';
+import { FaLightbulb } from 'react-icons/fa';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './FlowMap.css';
 
@@ -172,7 +173,7 @@ export function FlowMap() {
       >
         <Map
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-          mapStyle="mapbox://styles/mapbox/dark-v11"
+          mapStyle="mapbox://styles/mapbox/light-v11"
           style={{ width: '100%', height: '100%' }}
         />
       </DeckGL>
@@ -221,9 +222,9 @@ function MapLegend() {
         </div>
       </div>
 
-      <div className="legend-note">
-        <strong>💡 Astuce:</strong> Survolez les villes pour voir les détails
-      </div>
+      {/* <div className="legend-note">
+        <strong><FaLightbulb style={{ marginRight: '4px', color: 'var(--orange-primary)' }} /> Astuce:</strong> Survolez les villes pour voir les détails
+      </div> */}
     </div>
   );
 }

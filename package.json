@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@deck.gl/core": "^9.2.2",
+    "@deck.gl/layers": "^9.2.2",
+    "@deck.gl/react": "^9.2.2",
     "@tanstack/react-virtual": "^3.13.12",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -20,6 +23,7 @@
     "mapbox-gl": "^3.16.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-icons": "^5.5.0",
     "react-map-gl": "^8.1.0",
     "zustand": "^5.0.9"
   },

@@ -10,7 +10,11 @@ import './TimeSeriesChart.css';
 
 export function TimeSeriesChart() {
   const simulation = useSimulationStore(state => state.simulation);
-  const predictions = useSimulationStore(state => state.getPredictions());
+
+  const predictions = useMemo(() => {
+    if (!simulation) return { prediction7d: 0, prediction14d: 0 };
+    return simulation.getPredictions();
+  }, [simulation?.currentDay]);
 
   const option = useMemo(() => {
     if (!simulation || !simulation.history || simulation.history.length === 0) {

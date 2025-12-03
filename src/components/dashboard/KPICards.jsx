@@ -2,15 +2,22 @@
  * KPI Cards - Métriques principales animées
  */
 
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSimulationStore } from '../../store/simulationStore.js';
 import { formatNumber, formatPercentage } from '../../utils/statsUtils.js';
+import { FaVirus, FaWalking, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
 import './KPICards.css';
 
 export function KPICards() {
   const globalMetrics = useSimulationStore(state => state.globalMetrics);
   const mobilityIndex = useSimulationStore(state => state.mobilityIndex);
-  const predictions = useSimulationStore(state => state.getPredictions());
+  const simulation = useSimulationStore(state => state.simulation);
+
+  const predictions = useMemo(() => {
+    if (!simulation) return { prediction7d: 0, prediction14d: 0 };
+    return simulation.getPredictions();
+  }, [simulation?.currentDay]);
 
   if (!globalMetrics) {
     return (
@@ -26,7 +33,7 @@ export function KPICards() {
       label: 'Cas Actifs',
       value: formatNumber(globalMetrics.totalActiveCases),
       trend: globalMetrics.caseTrend,
-      icon: '🦠',
+      icon: FaVirus,
       color: 'var(--orange-primary)'
     },
     {
@@ -34,7 +41,7 @@ export function KPICards() {
       label: 'Indice Mobilité',
       value: `${Math.round(mobilityIndex)}%`,
       trend: null,
-      icon: '🚶',
+      icon: FaWalking,
       color: 'var(--black)'
     },
     {
@@ -42,15 +49,17 @@ export function KPICards() {
       label: 'Zones à Risque',
       value: globalMetrics.highRiskZones,
       trend: null,
-      icon: '⚠️',
+      icon: FaExclamationTriangle,
       color: 'var(--risk-high)'
     },
     {
       id: 'prediction',
       label: 'Prédiction J+7',
       value: formatNumber(predictions.prediction7d),
-      trend: predictions.prediction7d > globalMetrics.totalActiveCases ? '+' : '-',
-      icon: '📈',
+      trend: globalMetrics.totalActiveCases > 0
+        ? ((predictions.prediction7d - globalMetrics.totalActiveCases) / globalMetrics.totalActiveCases * 100)
+        : 0,
+      icon: FaChartLine,
       color: 'var(--risk-medium)'
     }
   ];
@@ -65,6 +74,8 @@ export function KPICards() {
 }
 
 function KPICard({ kpi, index }) {
+  const IconComponent = kpi.icon;
+
   return (
     <motion.div
       className="kpi-card card"
@@ -73,7 +84,7 @@ function KPICard({ kpi, index }) {
       transition={{ delay: index * 0.1, duration: 0.3 }}
     >
       <div className="kpi-icon" style={{ color: kpi.color }}>
-        {kpi.icon}
+        <IconComponent size={32} />
       </div>
 
       <div className="kpi-content">

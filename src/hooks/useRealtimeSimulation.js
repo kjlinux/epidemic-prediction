@@ -14,8 +14,8 @@ import { randomLogNormal } from '../utils/statsUtils.js';
  */
 export function useRealtimeSimulation(config = {}) {
   const {
-    minInterval = 2000, // 2 secondes minimum
-    maxInterval = 8000, // 8 secondes maximum
+    minInterval = 3000, // 3 secondes minimum
+    maxInterval = 6000, // 6 secondes maximum
     enableRandomEvents = true
   } = config;
 

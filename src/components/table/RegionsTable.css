@@ -1,0 +1,371 @@
+/**
+ * Styles pour le tableau virtualisé des régions
+ * Palette: Orange (#fa7e19), Noir (#000000), Gris (#F7F7F7)
+ */
+
+/* ===== Container principal ===== */
+.regions-table-container {
+  background: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-top: var(--spacing-xl);
+  width: 100%;
+}
+
+/* ===== Header avec recherche ===== */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid var(--color-orange);
+  background: white;
+  gap: 1rem;
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.table-search {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  width: 250px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.table-search:focus {
+  outline: none;
+  border-color: var(--color-orange);
+  box-shadow: 0 0 0 3px rgba(250, 126, 25, 0.1);
+}
+
+.table-search::placeholder {
+  color: #999;
+}
+
+/* ===== Conteneur scrollable ===== */
+.table-scroll-container {
+  height: 500px;
+  overflow: auto;
+  position: relative;
+  background: white;
+}
+
+/* Scrollbar personnalisée */
+.table-scroll-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--color-orange);
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #e06c10;
+}
+
+/* ===== Table ===== */
+.regions-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* En-têtes */
+.regions-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--color-gray-light);
+  z-index: 10;
+}
+
+/* Conteneur du corps du tableau */
+.table-body-container {
+  width: 100%;
+  position: relative;
+}
+
+.regions-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-black);
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 2px solid var(--color-orange);
+  transition: background 0.2s ease;
+}
+
+.regions-table th:hover {
+  background: #e0e0e0;
+}
+
+/* Cellules */
+.regions-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-black);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Wrapper de ligne (pour virtualisation) */
+.table-row-wrapper {
+  transition: background 0.15s ease;
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #f0f0f0;
+  align-items: center;
+  background: white;
+}
+
+.table-row-wrapper:hover {
+  background: var(--color-gray-light);
+}
+
+.table-row-wrapper > div {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== Colonnes spécifiques ===== */
+.col-name {
+  width: 35%;
+  min-width: 35%;
+  max-width: 35%;
+  font-weight: 500;
+}
+
+.col-population {
+  width: 25%;
+  min-width: 25%;
+  max-width: 25%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.col-cases {
+  width: 20%;
+  min-width: 20%;
+  max-width: 20%;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.col-variation {
+  width: 20%;
+  min-width: 20%;
+  max-width: 20%;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Variation 24h (couleurs) ===== */
+.variation-positive {
+  color: var(--color-risk-high);
+}
+
+.variation-negative {
+  color: var(--color-risk-low);
+}
+
+/* ===== Badges de risque ===== */
+.badge {
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 0.875rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+.badge--risk-high {
+  background: var(--color-risk-high);
+  color: white;
+}
+
+.badge--risk-medium {
+  background: var(--color-orange);
+  color: white;
+}
+
+.badge--risk-low {
+  background: var(--color-risk-low);
+  color: white;
+}
+
+/* ===== Message vide ===== */
+.table-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #666;
+}
+
+.table-empty p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* ===== Spinner de chargement ===== */
+.regions-table-container .spinner {
+  margin: 3rem auto;
+}
+
+/* ===== Responsive ===== */
+
+/* Tablette */
+@media (max-width: 1024px) {
+  .table-scroll-container {
+    height: 450px;
+  }
+
+  .table-header {
+    padding: 1rem;
+  }
+
+  .table-search {
+    width: 200px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .table-scroll-container {
+    height: 400px;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.875rem;
+  }
+
+  .table-header h3 {
+    font-size: 1rem;
+  }
+
+  .table-search {
+    width: 100%;
+  }
+
+  .regions-table {
+    font-size: 0.8125rem;
+  }
+
+  .regions-table th,
+  .regions-table td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* Ajuster les largeurs de colonnes sur mobile */
+  .col-name {
+    width: 30%;
+  }
+
+  .col-population {
+    width: 25%;
+    font-size: 0.75rem;
+  }
+
+  .col-cases {
+    width: 20%;
+  }
+
+  .col-variation {
+    width: 15%;
+    font-size: 0.75rem;
+  }
+
+  .col-risk {
+    width: 10%;
+  }
+
+  .badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: 40px;
+  }
+}
+
+/* Très petit mobile */
+@media (max-width: 480px) {
+  .table-scroll-container {
+    height: 350px;
+  }
+
+  .regions-table th,
+  .regions-table td {
+    padding: 0.375rem 0.5rem;
+  }
+
+  .table-header h3 {
+    font-size: 0.9375rem;
+  }
+
+  /* Masquer la colonne population sur très petits écrans */
+  .col-population {
+    display: none;
+  }
+
+  /* Réajuster les largeurs */
+  .col-name {
+    width: 35%;
+  }
+
+  .col-cases {
+    width: 25%;
+  }
+
+  .col-variation {
+    width: 20%;
+  }
+
+  .col-risk {
+    width: 20%;
+  }
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.regions-table-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Transition douce sur les lignes */
+.table-row-wrapper {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
