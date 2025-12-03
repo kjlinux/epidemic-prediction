@@ -3,7 +3,7 @@
  * Deck.gl + Mapbox GL pour visualiser les flux de mobilité et les zones à risque
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import DeckGL from '@deck.gl/react';
 import { Map } from 'react-map-gl/mapbox';
 import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers';
@@ -42,6 +42,12 @@ export function FlowMap() {
   const currentMetrics = useSimulationStore(state => state.currentMetrics);
   const mobilityMatrix = useSimulationStore(state => state.mobilityMatrix);
 
+  // État pour la vue et la rotation automatique
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+  const [isAutoRotating, setIsAutoRotating] = useState(true);
+  const inactivityTimerRef = useRef(null);
+  const rotationIntervalRef = useRef(null);
+
   // Préparer les données pour les flux actifs épidémiologiquement
   const flowsData = useMemo(() => {
     if (!mobilityMatrix || !currentMetrics) return [];
@@ -58,6 +64,58 @@ export function FlowMap() {
       position: [zone.coordinates[1], zone.coordinates[0]]
     }));
   }, [currentMetrics]);
+
+  // Fonction pour gérer l'interaction utilisateur
+  const handleInteraction = useCallback(() => {
+    // Arrêter la rotation automatique
+    setIsAutoRotating(false);
+
+    // Réinitialiser le timer d'inactivité
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+
+    // Reprendre la rotation après 3 secondes d'inactivité
+    inactivityTimerRef.current = setTimeout(() => {
+      setIsAutoRotating(true);
+    }, 3000);
+  }, []);
+
+  // Gestion de la rotation automatique
+  useEffect(() => {
+    if (isAutoRotating) {
+      // Rotation de 0.1 degré toutes les 50ms (rotation fluide et lente)
+      rotationIntervalRef.current = setInterval(() => {
+        setViewState(prev => ({
+          ...prev,
+          bearing: (prev.bearing + 0.1) % 360
+        }));
+      }, 50);
+    } else {
+      // Arrêter la rotation
+      if (rotationIntervalRef.current) {
+        clearInterval(rotationIntervalRef.current);
+      }
+    }
+
+    return () => {
+      if (rotationIntervalRef.current) {
+        clearInterval(rotationIntervalRef.current);
+      }
+    };
+  }, [isAutoRotating]);
+
+  // Nettoyage au démontage
+  useEffect(() => {
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+      if (rotationIntervalRef.current) {
+        clearInterval(rotationIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Couche 1 : Flux animés (Arcs)
   const arcLayer = new ArcLayer({
@@ -176,16 +234,29 @@ export function FlowMap() {
   return (
     <div className="flow-map-container">
       <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
+        viewState={viewState}
+        onViewStateChange={({ viewState: newViewState }) => {
+          setViewState(newViewState);
+          handleInteraction();
+        }}
         controller={{
           dragRotate: true, // Permet la rotation avec clic droit ou Ctrl+drag
           touchRotate: true, // Rotation tactile sur mobile
           keyboard: true, // Contrôles clavier
-          inertia: true // Animation fluide
+          inertia: true, // Animation fluide
+          scrollZoom: true,
+          dragPan: true,
+          doubleClickZoom: true
         }}
         layers={layers}
         getTooltip={getTooltip}
         style={{ position: 'relative', width: '100%', height: '100%' }}
+        onInteractionStateChange={(info) => {
+          // Détecter toute interaction (drag, zoom, etc.)
+          if (info.isDragging || info.isZooming || info.isRotating) {
+            handleInteraction();
+          }
+        }}
       >
         <Map
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
@@ -205,7 +276,20 @@ export function FlowMap() {
       {/* Instructions de contrôle */}
       <div className="map-controls-info">
         <FaLightbulb style={{ marginRight: '6px', color: 'var(--orange-primary)' }} />
-        <span>Clic droit + glisser pour rotation 3D | Molette pour zoom | Clic gauche pour déplacer</span>
+        <span>
+          {isAutoRotating ? (
+            <>
+              <span style={{
+                display: 'inline-block',
+                animation: 'rotate 2s linear infinite',
+                fontSize: '1.1em'
+              }}>🔄</span>
+              <span>Rotation automatique active</span>
+            </>
+          ) : (
+            'Clic droit + glisser pour rotation 3D'
+          )} | Molette pour zoom | Clic gauche pour déplacer
+        </span>
       </div>
     </div>
   );
