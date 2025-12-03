@@ -13,6 +13,7 @@ export const useSimulationStore = create((set, get) => ({
   currentMetrics: null,
   globalMetrics: null,
   mobilityMatrix: null,
+  baseMobilityMatrix: null, // ✅ Matrice de base pour calculer l'indice relatif
   mobilityIndex: 0,
   isRunning: false,
   simulationSpeed: 1, // 1x, 2x, 5x
@@ -25,18 +26,27 @@ export const useSimulationStore = create((set, get) => ({
    * Initialise la simulation
    */
   initialize: () => {
-    const startDate = new Date('2025-12-01');
-    const mobilityMatrix = generateMobilityMatrix(ivoryCoastCities, startDate);
-    const simulation = new EpidemicSimulation(ivoryCoastCities, mobilityMatrix);
+    // ✅ Démarrer depuis le 1er juin 2025
+    const startDate = new Date('2025-06-01');
+    const baseMobilityMatrix = generateMobilityMatrix(ivoryCoastCities, startDate);
+    const simulation = new EpidemicSimulation(ivoryCoastCities, baseMobilityMatrix, { startDate });
 
-    // Simuler 60 jours initiaux pour avoir de l'historique
-    for (let i = 0; i < 60; i++) {
+    // ✅ Calculer le nombre de jours entre le 1er juin 2025 et aujourd'hui (3 décembre 2025)
+    const today = new Date('2025-12-03'); // Date d'aujourd'hui
+    const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+
+    console.log(`🗓️ Simulation de l'historique: ${daysSinceStart} jours (du 1er juin 2025 au 3 décembre 2025)`);
+
+    // Simuler tout l'historique jusqu'à aujourd'hui
+    for (let i = 0; i < daysSinceStart; i++) {
       simulation.step();
     }
 
     const metrics = simulation.getMetrics();
     const global = simulation.getGlobalMetrics();
-    const mobilityIndex = calculateMobilityIndex(mobilityMatrix);
+
+    // ✅ Calculer l'indice de mobilité initial (100% au départ)
+    const mobilityIndex = 100;
 
     // Ajouter variation24h = 0 pour l'initialisation
     const metricsWithVariation = metrics.map(zone => ({
@@ -46,16 +56,18 @@ export const useSimulationStore = create((set, get) => ({
 
     set({
       simulation,
-      mobilityMatrix,
+      mobilityMatrix: baseMobilityMatrix,
+      baseMobilityMatrix, // ✅ Stocker la matrice de base
       currentMetrics: metricsWithVariation,
       globalMetrics: global,
       mobilityIndex,
       isRunning: true,
-      currentDate: new Date()
+      currentDate: today // ✅ Date actuelle = aujourd'hui
     });
 
     console.log('✅ Simulation initialisée avec', ivoryCoastCities.length, 'villes');
     console.log('📊 Cas actifs totaux:', global.totalActiveCases);
+    console.log('📅 Date actuelle:', today.toLocaleDateString('fr-FR'));
   },
 
   /**
@@ -83,7 +95,10 @@ export const useSimulationStore = create((set, get) => ({
 
     // Recalculer la mobilityMatrix en temps réel en tenant compte des risques
     const updatedMobilityMatrix = get().updateMobilityMatrix(metricsWithVariation, nextDate);
-    const mobilityIndex = calculateMobilityIndex(updatedMobilityMatrix);
+
+    // ✅ Calculer l'indice de mobilité comme % du flux de base
+    const baseMobilityMatrix = get().baseMobilityMatrix;
+    const mobilityIndex = get().calculateRelativeMobilityIndex(updatedMobilityMatrix, baseMobilityMatrix);
 
     set(state => ({
       currentMetrics: metricsWithVariation,
@@ -128,7 +143,8 @@ export const useSimulationStore = create((set, get) => ({
       // Recalculer la mobilityMatrix basée sur l'état actuel
       const currentDate = new Date();
       const updatedMobilityMatrix = get().updateMobilityMatrix(metrics, currentDate);
-      const mobilityIndex = calculateMobilityIndex(updatedMobilityMatrix);
+      const baseMobilityMatrix = get().baseMobilityMatrix;
+      const mobilityIndex = get().calculateRelativeMobilityIndex(updatedMobilityMatrix, baseMobilityMatrix);
 
       set({
         currentMetrics: metrics,
@@ -140,6 +156,29 @@ export const useSimulationStore = create((set, get) => ({
         isRunning: true
       });
     }
+  },
+
+  /**
+   * Calcule l'indice de mobilité relatif (pourcentage du flux de base)
+   * ✅ Permet de voir l'impact des restrictions en temps réel
+   */
+  calculateRelativeMobilityIndex: (currentMatrix, baseMatrix) => {
+    if (!currentMatrix || !baseMatrix) return 100;
+
+    const currentFlow = Array.from(currentMatrix.values()).reduce(
+      (sum, val) => sum + val,
+      0
+    );
+    const baseFlow = Array.from(baseMatrix.values()).reduce(
+      (sum, val) => sum + val,
+      0
+    );
+
+    if (baseFlow === 0) return 0;
+
+    // Calculer le pourcentage du flux de base
+    const relativeIndex = (currentFlow / baseFlow) * 100;
+    return Math.round(Math.max(0, Math.min(100, relativeIndex)));
   },
 
   /**
@@ -178,8 +217,9 @@ export const useSimulationStore = create((set, get) => ({
 
       const adjustedFlow = Math.round(baseFlow * combinedFactor);
 
-      // ✅ Seuil minimum réduit pour garder le flux (10 au lieu de 50)
-      if (adjustedFlow > 10) {
+      // ✅ Seuil minimum réduit pour garder le flux (5 au lieu de 10)
+      // Les flux tombent à 0 automatiquement lors de quarantaine stricte
+      if (adjustedFlow > 5) {
         adjustedMatrix.set(key, adjustedFlow);
       }
     }

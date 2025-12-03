@@ -219,3 +219,56 @@ export function getTopFlows(mobilityMatrix, cities, topN = 20) {
   // Trier par volume décroissant et prendre le top N
   return flows.sort((a, b) => b.volume - a.volume).slice(0, topN);
 }
+
+/**
+ * Obtient les flux épidémiologiquement actifs (flux impliquant des villes infectées)
+ * @param {Map} mobilityMatrix
+ * @param {Array} cities
+ * @param {Array} currentMetrics - Métriques actuelles des zones (avec activeCases)
+ * @param {number} minVolume - Volume minimum à afficher
+ * @returns {Array<{origin, dest, volume}>}
+ */
+export function getActiveEpidemicFlows(mobilityMatrix, cities, currentMetrics, minVolume = 50) {
+  const flows = [];
+
+  // Créer un Set des villes avec des cas actifs
+  const infectedCityIds = new Set(
+    currentMetrics
+      .filter(m => m.activeCases > 0)
+      .map(m => m.id)
+  );
+
+  // Si aucune ville n'est infectée, retourner les top flux normaux
+  if (infectedCityIds.size === 0) {
+    return getTopFlows(mobilityMatrix, cities, 100);
+  }
+
+  for (const [key, volume] of mobilityMatrix.entries()) {
+    if (volume < minVolume) continue; // Ignorer les flux trop faibles
+
+    const [originId, destId] = key.split('_');
+
+    // Ne garder que les flux où au moins une des deux villes est infectée
+    const isRelevant = infectedCityIds.has(originId) || infectedCityIds.has(destId);
+
+    if (!isRelevant) continue;
+
+    const origin = cities.find(c => c.id === originId);
+    const dest = cities.find(c => c.id === destId);
+
+    if (origin && dest) {
+      flows.push({
+        originId,
+        destId,
+        originName: origin.name,
+        destName: dest.name,
+        originCoords: origin.coordinates,
+        destCoords: dest.coordinates,
+        volume
+      });
+    }
+  }
+
+  // Trier par volume décroissant
+  return flows.sort((a, b) => b.volume - a.volume);
+}

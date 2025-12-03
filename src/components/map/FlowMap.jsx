@@ -8,7 +8,7 @@ import DeckGL from '@deck.gl/react';
 import { Map } from 'react-map-gl/mapbox';
 import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { useSimulationStore } from '../../store/simulationStore.js';
-import { getTopFlows } from '../../simulation/MobilityGenerator.js';
+import { getActiveEpidemicFlows } from '../../simulation/MobilityGenerator.js';
 import { ivoryCoastCities } from '../../data/ivoryCoastCities.js';
 import { getRiskColorRGBA } from '../../utils/colorUtils.js';
 import { FaLightbulb } from 'react-icons/fa';
@@ -31,11 +31,11 @@ export function FlowMap() {
   const currentMetrics = useSimulationStore(state => state.currentMetrics);
   const mobilityMatrix = useSimulationStore(state => state.mobilityMatrix);
 
-  // Préparer les données pour les flux (top 50 flux les plus importants)
+  // Préparer les données pour les flux actifs épidémiologiquement
   const flowsData = useMemo(() => {
-    if (!mobilityMatrix) return [];
-    return getTopFlows(mobilityMatrix, ivoryCoastCities, 50);
-  }, [mobilityMatrix]);
+    if (!mobilityMatrix || !currentMetrics) return [];
+    return getActiveEpidemicFlows(mobilityMatrix, ivoryCoastCities, currentMetrics, 50);
+  }, [mobilityMatrix, currentMetrics]);
 
   // Préparer les données pour les zones (cercles)
   const zonesData = useMemo(() => {

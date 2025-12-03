@@ -23,6 +23,9 @@ export class EpidemicSimulation {
       ...params
     };
 
+    // ✅ Date de départ de la simulation (fixe)
+    this.startDate = params.startDate || new Date('2025-06-01');
+
     // ✅ PHASE 2 : Sélectionner les foyers épidémiques AVANT d'initialiser les zones
     this.outbreakCityIds = this.selectInitialOutbreakCities(cities);
 
@@ -131,9 +134,12 @@ export class EpidemicSimulation {
 
     // Enregistrer snapshot pour historique global
     const metrics = this.getMetrics();
+    const currentDate = new Date(this.startDate);
+    currentDate.setDate(currentDate.getDate() + this.currentDay);
+
     this.history.push({
       day: this.currentDay,
-      date: new Date(Date.now() + this.currentDay * 86400000),
+      date: currentDate,
       metrics
     });
 
