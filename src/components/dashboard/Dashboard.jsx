@@ -30,7 +30,7 @@ export function Dashboard() {
     return (
       <div className="dashboard-loading">
         <div className="spinner-lg"></div>
-        <p>Initialisation de la simulation...</p>
+        <p>Chargement ...</p>
       </div>
     );
   }

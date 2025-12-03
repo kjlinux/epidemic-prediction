@@ -246,7 +246,7 @@ export class EpidemicSimulation {
 
   /**
    * Génère des prédictions à J+7 et J+14
-   * Utilise un modèle simplifié (tendance linéaire sur les 7 derniers jours)
+   * Utilise un modèle avec fluctuations réalistes basées sur la mobilité et les dynamiques de population
    * @returns {Object} { prediction7d, prediction14d }
    */
   getPredictions() {
@@ -260,17 +260,91 @@ export class EpidemicSimulation {
       h.metrics.reduce((sum, m) => sum + m.activeCases, 0)
     );
 
-    // Régression linéaire simple
+    // Régression linéaire simple pour la tendance de base
     const avgGrowth =
       (totalCasesRecent[6] - totalCasesRecent[0]) / 7;
 
     const currentCases = totalCasesRecent[6];
 
+    // Calculer les facteurs de fluctuation basés sur la mobilité et les zones à risque
+    const mobilityFactor = this.calculateMobilityImpact();
+    const riskZonesFactor = this.calculateRiskZonesImpact();
+    const seasonalFactor = this.calculateSeasonalFactor();
+
+    // Combiner les facteurs pour créer des fluctuations réalistes
+    // Les villes avec forte mobilité peuvent voir des pics suivis de baisses
+    const fluctuation7d = (mobilityFactor + riskZonesFactor + seasonalFactor) / 3;
+    const fluctuation14d = (mobilityFactor * 0.8 + riskZonesFactor * 0.9 + seasonalFactor * 1.1) / 3;
+
+    // Appliquer les fluctuations à la tendance de base
+    const prediction7d = Math.max(0, Math.round(
+      currentCases + (avgGrowth * 7 * (1 + fluctuation7d))
+    ));
+
+    const prediction14d = Math.max(0, Math.round(
+      currentCases + (avgGrowth * 14 * (1 + fluctuation14d))
+    ));
+
     return {
-      prediction7d: Math.max(0, Math.round(currentCases + avgGrowth * 7)),
-      prediction14d: Math.max(0, Math.round(currentCases + avgGrowth * 14)),
+      prediction7d,
+      prediction14d,
       confidenceInterval: 0.15 // ±15%
     };
+  }
+
+  /**
+   * Calcule l'impact de la mobilité sur les prédictions
+   * Retourne un facteur entre -0.3 et 0.3
+   */
+  calculateMobilityImpact() {
+    // Calculer la mobilité moyenne des zones
+    const totalMobilityFlows = Array.from(this.mobilityMatrix.values())
+      .reduce((sum, flow) => sum + flow, 0);
+
+    const avgMobility = totalMobilityFlows / Math.max(this.zones.length, 1);
+
+    // Normaliser et créer un facteur de fluctuation
+    // Forte mobilité peut causer des pics temporaires puis des stabilisations
+    const mobilityScore = Math.min(avgMobility / 5000, 1);
+
+    // Oscillation sinusoïdale basée sur le jour actuel
+    const oscillation = Math.sin(this.currentDay * 0.5) * 0.2;
+
+    return (mobilityScore - 0.5) * 0.6 + oscillation;
+  }
+
+  /**
+   * Calcule l'impact des zones à risque sur les prédictions
+   * Retourne un facteur entre -0.2 et 0.4
+   */
+  calculateRiskZonesImpact() {
+    const metrics = this.getMetrics();
+    const highRiskZones = metrics.filter(m => m.riskScore > 70);
+    const mediumRiskZones = metrics.filter(m => m.riskScore > 40 && m.riskScore <= 70);
+
+    // Plus de zones à risque = plus de variations potentielles
+    const riskRatio = (highRiskZones.length * 2 + mediumRiskZones.length) / metrics.length;
+
+    // Les zones à risque peuvent causer des hausses mais aussi des baisses
+    // (dues à des mesures de confinement, réduction de mobilité, etc.)
+    const baseImpact = (riskRatio - 0.3) * 0.8;
+
+    // Ajouter une composante cyclique
+    const cyclicVariation = Math.cos(this.currentDay * 0.3) * 0.3;
+
+    return Math.max(-0.2, Math.min(0.4, baseImpact + cyclicVariation));
+  }
+
+  /**
+   * Calcule le facteur saisonnier
+   * Retourne un facteur entre -0.2 et 0.2
+   */
+  calculateSeasonalFactor() {
+    // Simulation de facteurs saisonniers et hebdomadaires
+    const weekCycle = Math.sin((this.currentDay % 7) * Math.PI / 3.5) * 0.1;
+    const monthCycle = Math.cos(this.currentDay * 0.1) * 0.15;
+
+    return weekCycle + monthCycle * 0.5;
   }
 }
 

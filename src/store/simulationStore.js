@@ -80,10 +80,16 @@ export const useSimulationStore = create((set, get) => ({
     const nextDate = new Date(currentDate);
     nextDate.setDate(nextDate.getDate() + 1);
 
+    // Recalculer la mobilityMatrix en temps réel en tenant compte des risques
+    const updatedMobilityMatrix = get().updateMobilityMatrix(metricsWithVariation, nextDate);
+    const mobilityIndex = calculateMobilityIndex(updatedMobilityMatrix);
+
     set(state => ({
       currentMetrics: metricsWithVariation,
       globalMetrics: global,
       currentDate: nextDate,
+      mobilityMatrix: updatedMobilityMatrix,
+      mobilityIndex,
       alerts: [...state.alerts, ...newAlerts].slice(-10) // Garder 10 dernières alertes
     }));
   },
@@ -118,14 +124,72 @@ export const useSimulationStore = create((set, get) => ({
       const metrics = simulation.getMetrics();
       const global = simulation.getGlobalMetrics();
 
+      // Recalculer la mobilityMatrix basée sur l'état actuel
+      const currentDate = new Date();
+      const updatedMobilityMatrix = get().updateMobilityMatrix(metrics, currentDate);
+      const mobilityIndex = calculateMobilityIndex(updatedMobilityMatrix);
+
       set({
         currentMetrics: metrics,
         globalMetrics: global,
-        currentDate: new Date(),
+        mobilityMatrix: updatedMobilityMatrix,
+        mobilityIndex,
+        currentDate,
         alerts: [],
         isRunning: true
       });
     }
+  },
+
+  /**
+   * Met à jour la matrice de mobilité en fonction des risques épidémiologiques
+   * Les zones à haut risque voient leur mobilité réduite
+   */
+  updateMobilityMatrix: (currentMetrics, currentDate) => {
+    // Générer la matrice de base avec facteurs saisonniers
+    const baseMobilityMatrix = generateMobilityMatrix(ivoryCoastCities, currentDate);
+    const adjustedMatrix = new Map();
+
+    // Créer un index des risques par zone
+    const riskByZone = new Map();
+    currentMetrics.forEach(zone => {
+      riskByZone.set(zone.id, zone.riskScore);
+    });
+
+    // Ajuster chaque flux en fonction des niveaux de risque
+    for (const [key, baseFlow] of baseMobilityMatrix.entries()) {
+      const [originId, destId] = key.split('_');
+      const originRisk = riskByZone.get(originId) || 0;
+      const destRisk = riskByZone.get(destId) || 0;
+
+      // Facteur de réduction basé sur le risque
+      // Risque 0-30: pas de réduction (100%)
+      // Risque 30-60: réduction modérée (80%)
+      // Risque 60-80: réduction importante (50%)
+      // Risque 80+: réduction drastique (20%)
+      const getReductionFactor = (risk) => {
+        if (risk < 30) return 1.0;
+        if (risk < 60) return 0.8;
+        if (risk < 80) return 0.5;
+        return 0.2;
+      };
+
+      // Appliquer les deux facteurs (origine et destination)
+      const originFactor = getReductionFactor(originRisk);
+      const destFactor = getReductionFactor(destRisk);
+
+      // Le flux est réduit par le facteur le plus restrictif
+      const reductionFactor = Math.min(originFactor, destFactor);
+
+      const adjustedFlow = Math.round(baseFlow * reductionFactor);
+
+      // Seuil minimum pour garder le flux
+      if (adjustedFlow > 50) {
+        adjustedMatrix.set(key, adjustedFlow);
+      }
+    }
+
+    return adjustedMatrix;
   },
 
   /**
