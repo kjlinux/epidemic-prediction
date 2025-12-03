@@ -19,13 +19,24 @@ import './FlowMap.css';
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN ||
   'pk.eyJ1IjoiZXBpZGVtaWMtZGVtbyIsImEiOiJjbHp4eHh4In0.demo'; // Token démo (ne fonctionnera pas)
 
+// Vue initiale centrée sur la Côte d'Ivoire avec perspective 3D
 const INITIAL_VIEW_STATE = {
   latitude: 7.5, // Centre de la Côte d'Ivoire
   longitude: -5.5,
   zoom: 6.5,
-  pitch: 30,
-  bearing: 0
+  pitch: 45, // Angle de vue 3D plus prononcé
+  bearing: 0,
+  minZoom: 6, // Empêche de trop dézoomer
+  maxZoom: 10,
+  minPitch: 0,
+  maxPitch: 85 // Permet une vue presque à l'horizontale
 };
+
+// Limites géographiques de la Côte d'Ivoire
+const IVORY_COAST_BOUNDS = [
+  [-8.7, 4.2], // Sud-Ouest [longitude, latitude]
+  [-2.4, 10.8] // Nord-Est [longitude, latitude]
+];
 
 export function FlowMap() {
   const currentMetrics = useSimulationStore(state => state.currentMetrics);
@@ -166,7 +177,12 @@ export function FlowMap() {
     <div className="flow-map-container">
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
-        controller={true}
+        controller={{
+          dragRotate: true, // Permet la rotation avec clic droit ou Ctrl+drag
+          touchRotate: true, // Rotation tactile sur mobile
+          keyboard: true, // Contrôles clavier
+          inertia: true // Animation fluide
+        }}
         layers={layers}
         getTooltip={getTooltip}
         style={{ position: 'relative', width: '100%', height: '100%' }}
@@ -175,11 +191,19 @@ export function FlowMap() {
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           mapStyle="mapbox://styles/mapbox/light-v11"
           style={{ width: '100%', height: '100%' }}
+          maxBounds={IVORY_COAST_BOUNDS}
+          renderWorldCopies={false}
         />
       </DeckGL>
 
       {/* Légende */}
       <MapLegend />
+
+      {/* Instructions de contrôle */}
+      <div className="map-controls-info">
+        <FaLightbulb style={{ marginRight: '6px', color: 'var(--orange-primary)' }} />
+        <span>Clic droit + glisser pour rotation 3D | Molette pour zoom | Clic gauche pour déplacer</span>
+      </div>
     </div>
   );
 }
