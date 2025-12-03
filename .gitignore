@@ -27,3 +27,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+venv/
+# ou, pour être plus sûr, si ton venv peut être à différents niveaux :
+**/venv/

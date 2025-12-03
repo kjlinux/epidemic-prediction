@@ -9,7 +9,13 @@
       "Bash(pnpm dev)",
       "Bash(pnpm build:*)",
       "Bash(pnpm list:*)",
-      "Bash(pnpm run build:*)"
+      "Bash(pnpm run build:*)",
+      "Bash(pip3 list:*)",
+      "Bash(python3:*)",
+      "Bash(cmd //c \"echo %PROGRAMFILES%\")",
+      "Bash(pip install:*)",
+      "Bash(echo:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

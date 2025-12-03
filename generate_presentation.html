@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orange Think Tank 2025 - Générateur Présentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --orange: #fa7e19;
+            --orange-light: #ff9f4a;
+            --orange-dark: #e66d0a;
+            --noir: #000000;
+            --gris: #F7F7F7;
+            --gris-fonce: #E0E0E0;
+            --blanc: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 50%, var(--blanc) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        body::before {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--orange) 0%, transparent 70%);
+            top: -300px;
+            right: -300px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--orange-light) 0%, transparent 70%);
+            bottom: -250px;
+            left: -250px;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, -30px); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 60px;
+            border-radius: 32px;
+            box-shadow:
+                0 30px 90px rgba(0, 0, 0, 0.12),
+                0 0 1px rgba(0, 0, 0, 0.05);
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(250, 126, 25, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            padding-bottom: 30px;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--orange), transparent);
+            border-radius: 2px;
+        }
+
+        .logo-mark {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 16px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(250, 126, 25, 0.3);
+        }
+
+        .logo-mark::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 3px solid white;
+            border-radius: 8px;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+        }
+
+        h1 {
+            color: var(--noir);
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .upload-section {
+            background: linear-gradient(135deg, var(--gris) 0%, var(--blanc) 100%);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 20px;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .upload-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(250, 126, 25, 0.15);
+        }
+
+        .upload-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(250, 126, 25, 0.3);
+        }
+
+        .upload-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .upload-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--noir);
+            letter-spacing: -0.5px;
+        }
+
+        .file-input-group {
+            margin: 24px 0;
+            position: relative;
+        }
+
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 0 8px;
+        }
+
+        .label-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-badge {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(250, 126, 25, 0.25);
+        }
+
+        .label-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--noir);
+            letter-spacing: -0.2px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--gris-fonce);
+            border-radius: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--orange);
+            background: #fffbf7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(250, 126, 25, 0.1);
+        }
+
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 4px rgba(250, 126, 25, 0.1);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-badge.loaded {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-badge.loaded::before {
+            content: '✓';
+            font-weight: 700;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+            color: white;
+            border: none;
+            padding: 20px 48px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 32px;
+            box-shadow: 0 8px 24px rgba(250, 126, 25, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: -0.3px;
+        }
+
+        .generate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .generate-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(250, 126, 25, 0.4);
+        }
+
+        .generate-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .generate-btn:disabled {
+            background: linear-gradient(135deg, #ccc, #ddd);
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.6;
+        }
+
+        .info-panel {
+            background: linear-gradient(135deg, var(--gris) 0%, var(--blanc) 100%);
+            padding: 32px;
+            border-radius: 20px;
+            margin-top: 32px;
+            border-left: 4px solid var(--orange);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(250, 126, 25, 0.25);
+        }
+
+        .info-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--noir);
+            line-height: 1.4;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .loader.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 4px solid var(--gris);
+            border-top-color: var(--orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: var(--orange);
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: -0.3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-mark"></div>
+            <h1>Orange Think Tank 2025</h1>
+            <p class="subtitle">Générateur de présentation PowerPoint professionnelle<br>Thème : Prédiction des Épidémies par Données de Mobilité</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-header">
+                <div class="upload-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                </div>
+                <span class="upload-title">Charger les Images</span>
+            </div>
+
+            <div class="file-input-group">
+                <div class="file-label">
+                    <div class="label-content">
+                        <div class="step-badge">1</div>
+                        <span class="label-text">Image Architecture (architecture.png)</span>
+                    </div>
+                    <span class="status-badge" id="status1"></span>
+                </div>
+                <div class="file-input-wrapper">
+                    <input type="file" id="architectureImg" accept="image/*" onchange="loadImage(this, 'architecture')" aria-label="Image Architecture">
+                </div>
+            </div>
+
+            <div class="file-input-group">
+                <div class="file-label">
+                    <div class="label-content">
+                        <div class="step-badge">2</div>
+                        <span class="label-text">Image Anonymisation (anonymisation.png)</span>
+                    </div>
+                    <span class="status-badge" id="status2"></span>
+                </div>
+                <div class="file-input-wrapper">
+                    <input type="file" id="anonymisationImg" accept="image/*" onchange="loadImage(this, 'anonymisation')" aria-label="Image Anonymisation">
+                </div>
+            </div>
+        </div>
+
+        <button class="generate-btn" id="generateBtn" onclick="generatePresentation()" disabled>
+            Générer la Présentation
+        </button>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p class="loader-text">Génération en cours...</p>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Contenu</div>
+                        <div class="info-text">8 slides<br>ultra-professionnelles</div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Design</div>
+                        <div class="info-text">Charte Orange CI<br>Design moderne</div>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="3" x2="9" y2="21"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Format</div>
+                        <div class="info-text">PowerPoint PPTX<br>Format 16:9</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const COLORS = {
+            orange: 'fa7e19',
+            orangeLight: 'ff9f4a',
+            orangeDark: 'e66d0a',
+            noir: '000000',
+            gris: 'F7F7F7',
+            grisFonce: 'E0E0E0',
+            grisMoyen: 'CCCCCC',
+            blanc: 'FFFFFF',
+            green: '4caf50'
+        };
+
+        let images = { architecture: null, anonymisation: null };
+
+        function loadImage(input, key) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    images[key] = e.target.result;
+                    const statusId = key === 'architecture' ? 'status1' : 'status2';
+                    const badge = document.getElementById(statusId);
+                    badge.textContent = 'Chargée';
+                    badge.classList.add('loaded');
+                    checkAllImagesLoaded();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function checkAllImagesLoaded() {
+            document.getElementById('generateBtn').disabled = !(images.architecture && images.anonymisation);
+        }
+
+        async function generatePresentation() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('active');
+
+            try {
+                let pres = new PptxGenJS();
+                pres.layout = 'LAYOUT_16x9';
+                pres.author = 'Orange Think Tank 2025';
+                pres.title = 'Prédiction des Épidémies par Mobilité';
+
+                // === SLIDE 1 : TITRE MODERNE ===
+                let slide1 = pres.addSlide();
+                slide1.background = { color: COLORS.blanc };
+
+                // Formes géométriques décoratives
+                slide1.addShape(pres.ShapeType.rect, {
+                    x: -0.5, y: -0.5, w: 3, h: 3,
+                    fill: { color: COLORS.orange, transparency: 92 },
+                    rotate: 45, line: { type: 'none' }
+                });
+
+                slide1.addShape(pres.ShapeType.ellipse, {
+                    x: 8.5, y: 4.5, w: 2.5, h: 2.5,
+                    fill: { color: COLORS.orangeLight, transparency: 90 },
+                    line: { type: 'none' }
+                });
+
+                // Accent vertical orange
+                slide1.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: 0.15, h: '100%',
+                    fill: { color: COLORS.orange }
+                });
+
+                // Contenu principal
+                slide1.addText('PRÉDICTION DES ÉPIDÉMIES', {
+                    x: 1.2, y: 2.0, w: 8.3, h: 0.7,
+                    fontSize: 40, bold: true, color: COLORS.noir,
+                    align: 'left', fontFace: 'Calibri'
+                });
+
+                slide1.addText('Santé : comment prédire la propagation des épidémies sur la base des données de mobilités des populations ?', {
+                    x: 1.2, y: 2.8, w: 8.3, h: 0.9,
+                    fontSize: 18, color: COLORS.orange, bold: true,
+                    align: 'left'
+                });
+
+                // Ligne de séparation
+                slide1.addShape(pres.ShapeType.rect, {
+                    x: 1.2, y: 3.9, w: 3, h: 0.03,
+                    fill: { color: COLORS.orange }
+                });
+
+                // Info box
+                slide1.addShape(pres.ShapeType.rect, {
+                    x: 1.2, y: 4.3, w: 5.5, h: 0.9,
+                    fill: { color: COLORS.gris },
+                    line: { type: 'none' }
+                });
+
+                slide1.addText([
+                    { text: 'ORANGE THINK TANK CHALLENGE 2025\n', options: { fontSize: 14, bold: true, color: COLORS.orange } },
+                    { text: 'Thème Santé  •  4 Décembre 2025', options: { fontSize: 12, color: COLORS.noir } }
+                ], {
+                    x: 1.4, y: 4.45, w: 5.1, h: 0.7,
+                    valign: 'middle'
+                });
+
+                // Logo mark
+                slide1.addShape(pres.ShapeType.rect, {
+                    x: 8.7, y: 5.1, w: 0.6, h: 0.6,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide1.addText('Orange CI', {
+                    x: 7.8, y: 5.15, w: 1.7, h: 0.5,
+                    fontSize: 16, bold: true, color: COLORS.noir,
+                    align: 'right'
+                });
+
+                addPageNumber(slide1, 1);
+
+                // === SLIDE 2 : PLAN ===
+                let slide2 = pres.addSlide();
+                slide2.background = { color: COLORS.blanc };
+
+                // Header bar
+                slide2.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: '100%', h: 0.08,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide2.addText('PLAN DE LA PRÉSENTATION', {
+                    x: 0.5, y: 0.4, w: 9, h: 0.6,
+                    fontSize: 32, bold: true, color: COLORS.orange
+                });
+
+                // Decorative accent
+                slide2.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: 0.15, h: '100%',
+                    fill: { color: COLORS.orange }
+                });
+
+                // Plan items
+                const planItems = [
+                    { num: '01', title: 'Le Défi Sanitaire Ivoirien', subtitle: 'Contexte et problématique' },
+                    { num: '02', title: 'La Solution', subtitle: 'Mobilité + IA pour prédire' },
+                    { num: '03', title: 'Méthodologie', subtitle: 'Comment ça marche ?' },
+                    { num: '04', title: 'Vie Privée Garantie', subtitle: 'Anonymisation et conformité' },
+                    { num: '05', title: 'Résultats & Impact', subtitle: 'Bénéfices pour tous' },
+                    { num: '06', title: 'Démonstration', subtitle: 'Prototype en action' }
+                ];
+
+                planItems.forEach((item, idx) => {
+                    const yPos = 1.55 + (idx * 0.65);
+
+                    // Card background
+                    slide2.addShape(pres.ShapeType.rect, {
+                        x: 1.5, y: yPos, w: 7.5, h: 0.55,
+                        fill: { color: COLORS.gris },
+                        line: { color: COLORS.orange, width: 1 }
+                    });
+
+                    // Number badge
+                    slide2.addShape(pres.ShapeType.rect, {
+                        x: 1.7, y: yPos + 0.1, w: 0.5, h: 0.35,
+                        fill: { color: COLORS.orange }
+                    });
+
+                    slide2.addText(item.num, {
+                        x: 1.7, y: yPos + 0.1, w: 0.5, h: 0.35,
+                        fontSize: 14, bold: true, color: COLORS.blanc,
+                        align: 'center', valign: 'middle'
+                    });
+
+                    // Title and subtitle
+                    slide2.addText(item.title, {
+                        x: 2.4, y: yPos + 0.08, w: 6.4, h: 0.25,
+                        fontSize: 13, bold: true, color: COLORS.noir,
+                        align: 'left'
+                    });
+
+                    slide2.addText(item.subtitle, {
+                        x: 2.4, y: yPos + 0.28, w: 6.4, h: 0.2,
+                        fontSize: 10, color: COLORS.noir,
+                        align: 'left', italic: true
+                    });
+
+                    // Arrow indicator
+                    slide2.addShape(pres.ShapeType.rtTriangle, {
+                        x: 8.7, y: yPos + 0.17, w: 0.2, h: 0.2,
+                        fill: { color: COLORS.orange },
+                        rotate: 270
+                    });
+                });
+
+                addPageNumber(slide2, 2);
+
+                // === SLIDE 3 : PROBLÉMATIQUE ===
+                let slide3 = pres.addSlide();
+                slide3.background = { color: COLORS.blanc };
+
+                // Header bar
+                slide3.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: '100%', h: 0.08,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide3.addText('LE DÉFI SANITAIRE IVOIRIEN', {
+                    x: 0.5, y: 0.4, w: 9, h: 0.6,
+                    fontSize: 32, bold: true, color: COLORS.orange
+                });
+
+                // Contexte card
+                slide3.addShape(pres.ShapeType.rect, {
+                    x: 0.7, y: 1.6, w: 4.2, h: 3.5,
+                    fill: { color: COLORS.gris },
+                    line: { color: COLORS.orange, width: 2 }
+                });
+
+                // Icon circle
+                slide3.addShape(pres.ShapeType.ellipse, {
+                    x: 0.9, y: 1.8, w: 0.5, h: 0.5,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide3.addText('CONTEXTE', {
+                    x: 1.5, y: 1.85, w: 3, h: 0.4,
+                    fontSize: 18, bold: true, color: COLORS.orange
+                });
+
+                slide3.addText([
+                    { text: 'Épidémies récurrentes\n', options: { fontSize: 13, bold: true } },
+                    { text: 'COVID-19, dengue, méningite, choléra\n\n', options: { fontSize: 11 } },
+                    { text: 'Système réactif\n', options: { fontSize: 13, bold: true } },
+                    { text: 'au lieu de prédictif\n\n', options: { fontSize: 11 } },
+                    { text: 'Ressources limitées\n', options: { fontSize: 13, bold: true } },
+                    { text: '4 lits / 10 000 habitants\n', options: { fontSize: 11 } },
+                    { text: '1 médecin / 5 000 habitants', options: { fontSize: 11 } }
+                ], {
+                    x: 0.95, y: 2.4, w: 3.8, h: 2.5,
+                    color: COLORS.noir
+                });
+
+                // Défi card
+                slide3.addShape(pres.ShapeType.rect, {
+                    x: 5.3, y: 1.6, w: 4.2, h: 3.5,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide3.addText('LE DÉFI', {
+                    x: 5.3, y: 1.95, w: 4.2, h: 0.5,
+                    fontSize: 20, bold: true, color: COLORS.blanc,
+                    align: 'center'
+                });
+
+                slide3.addShape(pres.ShapeType.rect, {
+                    x: 6.3, y: 2.5, w: 2.2, h: 0.02,
+                    fill: { color: COLORS.blanc }
+                });
+
+                slide3.addText([
+                    { text: 'Comment anticiper\n', options: { fontSize: 16, bold: true, color: COLORS.blanc } },
+                    { text: 'la propagation\n', options: { fontSize: 16, bold: true, color: COLORS.blanc } },
+                    { text: '7 à 14 jours\n', options: { fontSize: 16, bold: true, color: COLORS.blanc } },
+                    { text: 'à l\'avance ?\n\n', options: { fontSize: 16, bold: true, color: COLORS.blanc } },
+                    { text: 'Comment optimiser\n', options: { fontSize: 14, color: COLORS.blanc } },
+                    { text: 'l\'allocation des\n', options: { fontSize: 14, color: COLORS.blanc } },
+                    { text: 'ressources sanitaires ?', options: { fontSize: 14, color: COLORS.blanc } }
+                ], {
+                    x: 5.5, y: 2.85, w: 3.8, h: 2,
+                    align: 'center', valign: 'middle'
+                });
+
+                addPageNumber(slide3, 3);
+
+                // === SLIDE 4 : SOLUTION ===
+                let slide4 = pres.addSlide();
+                slide4.background = { color: COLORS.blanc };
+
+                slide4.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: '100%', h: 0.08,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide4.addText('LA SOLUTION', {
+                    x: 0.5, y: 0.4, w: 9, h: 0.6,
+                    fontSize: 32, bold: true, color: COLORS.orange
+                });
+
+                // Insight banner avec effet de profondeur
+                slide4.addShape(pres.ShapeType.rect, {
+                    x: 1.05, y: 1.35, w: 7.9, h: 0.75,
+                    fill: { color: COLORS.grisFonce }
+                });
+
+                slide4.addShape(pres.ShapeType.rect, {
+                    x: 1, y: 1.3, w: 7.9, h: 0.75,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide4.addText('Les déplacements humains transportent les virus', {
+                    x: 1.2, y: 1.3, w: 7.5, h: 0.75,
+                    fontSize: 20, bold: true, color: COLORS.blanc,
+                    align: 'center', valign: 'middle'
+                });
+
+                // 3 Piliers avec design cards modernes
+                const pillars = [
+                    { x: 0.6, title: 'MOBILITÉ', items: ['15M d\'abonnés', '55% du marché', '95% du territoire'] },
+                    { x: 3.6, title: 'SÉCURITÉ', items: ['K-anonymat', '≥50 personnes', 'Conforme RGPD'] },
+                    { x: 6.6, title: 'INTELLIGENCE', items: ['Modèle SEIR', 'Prédictions J+7/J+14', 'Temps réel'] }
+                ];
+
+                pillars.forEach((pillar, idx) => {
+                    // Shadow
+                    slide4.addShape(pres.ShapeType.rect, {
+                        x: pillar.x + 0.08, y: 2.58, w: 2.5, h: 2.6,
+                        fill: { color: COLORS.grisFonce },
+                        line: { type: 'none' }
+                    });
+
+                    // Card principale
+                    slide4.addShape(pres.ShapeType.rect, {
+                        x: pillar.x, y: 2.5, w: 2.5, h: 2.6,
+                        fill: { color: COLORS.blanc },
+                        line: { color: COLORS.orange, width: 2 }
+                    });
+
+                    // Header coloré
+                    slide4.addShape(pres.ShapeType.rect, {
+                        x: pillar.x, y: 2.5, w: 2.5, h: 0.6,
+                        fill: { color: COLORS.gris }
+                    });
+
+                    // Petit accent
+                    slide4.addShape(pres.ShapeType.rect, {
+                        x: pillar.x, y: 2.5, w: 0.15, h: 0.6,
+                        fill: { color: COLORS.orange }
+                    });
+
+                    slide4.addText(pillar.title, {
+                        x: pillar.x, y: 2.6, w: 2.5, h: 0.4,
+                        fontSize: 14, bold: true, color: COLORS.orange,
+                        align: 'center'
+                    });
+
+                    // Items
+                    pillar.items.forEach((item, i) => {
+                        slide4.addShape(pres.ShapeType.ellipse, {
+                            x: pillar.x + 0.25, y: 3.35 + (i * 0.45), w: 0.12, h: 0.12,
+                            fill: { color: COLORS.orange }
+                        });
+
+                        slide4.addText(item, {
+                            x: pillar.x + 0.45, y: 3.3 + (i * 0.45), w: 1.9, h: 0.22,
+                            fontSize: 11, color: COLORS.noir, align: 'left'
+                        });
+                    });
+                });
+
+                addPageNumber(slide4, 4);
+
+                // === SLIDE 5 : MÉTHODOLOGIE ===
+                let slide5 = pres.addSlide();
+                slide5.background = { color: COLORS.blanc };
+
+                slide5.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: '100%', h: 0.08,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide5.addText('COMMENT ÇA MARCHE ?', {
+                    x: 0.5, y: 0.4, w: 9, h: 0.6,
+                    fontSize: 32, bold: true, color: COLORS.orange
+                });
+
+                // Frame pour image avec bordure élégante
+                slide5.addShape(pres.ShapeType.rect, {
+                    x: 0.85, y: 1.35, w: 8.3, h: 3.8,
+                    fill: { color: COLORS.blanc },
+                    line: { color: COLORS.gris, width: 1 }
+                });
+
+                slide5.addShape(pres.ShapeType.rect, {
+                    x: 0.88, y: 1.38, w: 8.24, h: 3.74,
+                    fill: { color: COLORS.gris },
+                    line: { type: 'none' }
+                });
+
+                slide5.addImage({
+                    data: images.architecture,
+                    x: 0.95, y: 1.45, w: 8.1, h: 3.6
+                });
+
+                // Badge scientifique
+                slide5.addShape(pres.ShapeType.rect, {
+                    x: 1.5, y: 5.25, w: 7, h: 0.35,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide5.addText('Base scientifique : Lima et al. (2015) - Scientific Reports', {
+                    x: 1.5, y: 5.25, w: 7, h: 0.35,
+                    fontSize: 11, color: COLORS.blanc,
+                    align: 'center', valign: 'middle', bold: true
+                });
+
+                addPageNumber(slide5, 5);
+
+                // === SLIDE 6 : VIE PRIVÉE ===
+                let slide6 = pres.addSlide();
+                slide6.background = { color: COLORS.blanc };
+
+                slide6.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: '100%', h: 0.08,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide6.addText('VIE PRIVÉE GARANTIE', {
+                    x: 0.5, y: 0.4, w: 9, h: 0.6,
+                    fontSize: 32, bold: true, color: COLORS.orange
+                });
+
+                // Image avec frame moderne
+                slide6.addShape(pres.ShapeType.rect, {
+                    x: 0.35, y: 1.25, w: 5.3, h: 4.2,
+                    fill: { color: COLORS.blanc },
+                    line: { color: COLORS.gris, width: 1 }
+                });
+
+                slide6.addShape(pres.ShapeType.rect, {
+                    x: 0.4, y: 1.3, w: 5.2, h: 4.1,
+                    fill: { color: COLORS.gris }
+                });
+
+                slide6.addImage({
+                    data: images.anonymisation,
+                    x: 0.5, y: 1.4, w: 5, h: 3.9
+                });
+
+                // Panel conformité moderne
+                slide6.addShape(pres.ShapeType.rect, {
+                    x: 6.05, y: 1.35, w: 3.5, h: 4,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide6.addText('CONFORMITÉ', {
+                    x: 6.05, y: 1.55, w: 3.5, h: 0.4,
+                    fontSize: 18, bold: true, color: COLORS.blanc,
+                    align: 'center'
+                });
+
+                slide6.addShape(pres.ShapeType.rect, {
+                    x: 6.95, y: 2, w: 1.7, h: 0.02,
+                    fill: { color: COLORS.blanc }
+                });
+
+                const compliance = ['RGPD', 'Loi ivoirienne', 'Comité d\'éthique', 'Audits indépendants'];
+                compliance.forEach((item, i) => {
+                    slide6.addShape(pres.ShapeType.rect, {
+                        x: 6.4, y: 2.5 + (i * 0.55), w: 0.25, h: 0.25,
+                        fill: { color: COLORS.blanc }
+                    });
+
+                    slide6.addText(item, {
+                        x: 6.75, y: 2.48 + (i * 0.55), w: 2.6, h: 0.28,
+                        fontSize: 13, color: COLORS.blanc, valign: 'middle'
+                    });
+                });
+
+                // Badge K-anonymat
+                slide6.addShape(pres.ShapeType.rect, {
+                    x: 6.3, y: 4.65, w: 3, h: 0.45,
+                    fill: { color: COLORS.blanc }
+                });
+
+                slide6.addText('K-anonymat ≥ 50', {
+                    x: 6.3, y: 4.65, w: 3, h: 0.45,
+                    fontSize: 15, bold: true, color: COLORS.orange,
+                    align: 'center', valign: 'middle'
+                });
+
+                addPageNumber(slide6, 6);
+
+                // === SLIDE 7 : IMPACT ===
+                let slide7 = pres.addSlide();
+                slide7.background = { color: COLORS.blanc };
+
+                slide7.addShape(pres.ShapeType.rect, {
+                    x: 0, y: 0, w: '100%', h: 0.08,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide7.addText('RÉSULTATS & IMPACT', {
+                    x: 0.5, y: 0.4, w: 9, h: 0.6,
+                    fontSize: 32, bold: true, color: COLORS.orange
+                });
+
+                // Population card
+                slide7.addShape(pres.ShapeType.rect, {
+                    x: 0.5, y: 1.35, w: 4.5, h: 4.2,
+                    fill: { color: COLORS.gris },
+                    line: { color: COLORS.orange, width: 2 }
+                });
+
+                slide7.addShape(pres.ShapeType.rect, {
+                    x: 0.5, y: 1.35, w: 4.5, h: 0.55,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide7.addText('POUR LA POPULATION', {
+                    x: 0.5, y: 1.35, w: 4.5, h: 0.55,
+                    fontSize: 16, bold: true, color: COLORS.blanc,
+                    align: 'center', valign: 'middle'
+                });
+
+                const popBenefits = [
+                    'Réduction 20-30% de la mortalité',
+                    'Détection précoce 50-70% des foyers',
+                    'Ressources sanitaires mieux ciblées',
+                    'Moins de confinements généralisés'
+                ];
+
+                popBenefits.forEach((benefit, i) => {
+                    slide7.addShape(pres.ShapeType.rect, {
+                        x: 0.75, y: 2.25 + (i * 0.65), w: 0.3, h: 0.3,
+                        fill: { color: COLORS.orange }
+                    });
+
+                    slide7.addText(benefit, {
+                        x: 1.15, y: 2.25 + (i * 0.65), w: 3.6, h: 0.3,
+                        fontSize: 12, color: COLORS.noir, valign: 'middle'
+                    });
+                });
+
+                // Orange CI card
+                slide7.addShape(pres.ShapeType.rect, {
+                    x: 5.5, y: 1.35, w: 4.5, h: 4.2,
+                    fill: { color: COLORS.orange }
+                });
+
+                slide7.addShape(pres.ShapeType.rect, {
+                    x: 5.5, y: 1.35, w: 4.5, h: 0.55,
+                    fill: { color: COLORS.blanc }
+                });
+
+                slide7.addText('POUR ORANGE CI', {
+                    x: 5.5, y: 1.35, w: 4.5, h: 0.55,
+                    fontSize: 16, bold: true, color: COLORS.orange,
+                    align: 'center', valign: 'middle'
+                });
+
+                const orangeBenefits = [
+                    'Leadership RSE & innovation sociale',
+                    'Valorisation des actifs data existants',
+                    'Relation privilégiée avec l\'État',
+                    'Modèle réplicable en Afrique'
+                ];
+
+                orangeBenefits.forEach((benefit, i) => {
+                    slide7.addShape(pres.ShapeType.rect, {
+                        x: 5.75, y: 2.25 + (i * 0.65), w: 0.3, h: 0.3,
+                        fill: { color: COLORS.blanc }
+                    });
+
+                    slide7.addText(benefit, {
+                        x: 6.15, y: 2.25 + (i * 0.65), w: 3.6, h: 0.3,
+                        fontSize: 12, color: COLORS.blanc, valign: 'middle'
+                    });
+                });
+
+                addPageNumber(slide7, 7);
+
+                // === SLIDE 8 : DÉMO ===
+                let slide8 = pres.addSlide();
+                slide8.background = { color: COLORS.gris };
+
+                // Formes décoratives
+                slide8.addShape(pres.ShapeType.ellipse, {
+                    x: -1.5, y: -1.5, w: 4, h: 4,
+                    fill: { color: COLORS.orange, transparency: 92 }
+                });
+
+                slide8.addShape(pres.ShapeType.ellipse, {
+                    x: 8, y: 4, w: 3, h: 3,
+                    fill: { color: COLORS.orangeLight, transparency: 90 }
+                });
+
+                // Contenu principal
+                slide8.addText('DÉCOUVREZ LE', {
+                    x: 1, y: 1.8, w: 8, h: 0.5,
+                    fontSize: 28, bold: true, color: COLORS.noir,
+                    align: 'center'
+                });
+
+                slide8.addText('PROTOTYPE', {
+                    x: 1, y: 2.4, w: 8, h: 0.8,
+                    fontSize: 48, bold: true, color: COLORS.orange,
+                    align: 'center'
+                });
+
+                slide8.addText('EN ACTION', {
+                    x: 1, y: 3.25, w: 8, h: 0.5,
+                    fontSize: 28, bold: true, color: COLORS.noir,
+                    align: 'center'
+                });
+
+                // CTA button moderne
+                slide8.addShape(pres.ShapeType.rect, {
+                    x: 3.35, y: 4.35, w: 3.3, h: 0.65,
+                    fill: { color: COLORS.noir }
+                });
+
+                slide8.addShape(pres.ShapeType.rect, {
+                    x: 3.3, y: 4.3, w: 3.3, h: 0.65,
+                    fill: { color: COLORS.orange },
+                    line: { color: COLORS.noir, width: 2 }
+                });
+
+                slide8.addText('DÉMONSTRATION', {
+                    x: 3.3, y: 4.3, w: 3.3, h: 0.65,
+                    fontSize: 18, bold: true, color: COLORS.blanc,
+                    align: 'center', valign: 'middle'
+                });
+
+                slide8.addText('Dashboard Interactif de Surveillance Épidémiologique', {
+                    x: 1, y: 5.15, w: 8, h: 0.3,
+                    fontSize: 13, color: COLORS.noir,
+                    align: 'center', italic: true
+                });
+
+                addPageNumber(slide8, 8);
+
+                // Sauvegarder
+                await pres.writeFile({ fileName: 'Orange_Think_Tank_2025_Prediction_Epidemies.pptx' });
+
+                loader.classList.remove('active');
+                alert('✅ Présentation générée avec succès !\n\nDesign UI/UX professionnel moderne\nFichier : Orange_Think_Tank_2025_Prediction_Epidemies.pptx');
+
+            } catch (error) {
+                loader.classList.remove('active');
+                console.error('Erreur :', error);
+                alert('❌ Erreur lors de la génération :\n' + error.message);
+            }
+        }
+
+        function addPageNumber(slide, num) {
+            slide.addText(num.toString(), {
+                x: 9.2, y: 5.35, w: 0.5, h: 0.25,
+                fontSize: 11, color: COLORS.grisMoyen,
+                align: 'right'
+            });
+        }
+    </script>
+</body>
+</html>
