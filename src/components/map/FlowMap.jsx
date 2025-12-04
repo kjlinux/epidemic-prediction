@@ -5,7 +5,7 @@
 
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import DeckGL from '@deck.gl/react';
-import { Map } from 'react-map-gl';
+import { Map } from 'react-map-gl/mapbox';
 import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { useSimulationStore } from '../../store/simulationStore.js';
 import { getActiveEpidemicFlows } from '../../simulation/MobilityGenerator.js';
