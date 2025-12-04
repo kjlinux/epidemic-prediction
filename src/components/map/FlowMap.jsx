@@ -306,7 +306,7 @@ export function FlowMap() {
       <MapLegend />
 
       {/* Instructions de contrôle */}
-      <div className="map-controls-info">
+      {/* <div className="map-controls-info">
         <FaLightbulb style={{ marginRight: '6px', color: 'var(--orange-primary)' }} />
         <span>
           {isAutoRotating ? (
@@ -322,7 +322,7 @@ export function FlowMap() {
             'Clic droit + glisser pour rotation 3D'
           )} | Molette pour zoom | Clic gauche pour déplacer
         </span>
-      </div>
+      </div> */}
     </div>
   );
 }
