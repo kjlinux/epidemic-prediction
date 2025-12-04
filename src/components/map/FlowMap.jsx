@@ -5,7 +5,7 @@
 
 import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import DeckGL from '@deck.gl/react';
-import { Map } from 'react-map-gl/mapbox';
+import { Map } from 'react-map-gl';
 import { ArcLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { useSimulationStore } from '../../store/simulationStore.js';
 import { getActiveEpidemicFlows } from '../../simulation/MobilityGenerator.js';
@@ -47,6 +47,37 @@ export function FlowMap() {
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const inactivityTimerRef = useRef(null);
   const rotationIntervalRef = useRef(null);
+
+  // Fonction pour contraindre le viewState aux limites de la Côte d'Ivoire
+  const constrainViewState = useCallback((newViewState) => {
+    const constrainedViewState = { ...newViewState };
+
+    // Contraindre la longitude
+    constrainedViewState.longitude = Math.max(
+      IVORY_COAST_BOUNDS[0][0],
+      Math.min(IVORY_COAST_BOUNDS[1][0], constrainedViewState.longitude)
+    );
+
+    // Contraindre la latitude
+    constrainedViewState.latitude = Math.max(
+      IVORY_COAST_BOUNDS[0][1],
+      Math.min(IVORY_COAST_BOUNDS[1][1], constrainedViewState.latitude)
+    );
+
+    // Contraindre le zoom
+    constrainedViewState.zoom = Math.max(
+      INITIAL_VIEW_STATE.minZoom,
+      Math.min(INITIAL_VIEW_STATE.maxZoom, constrainedViewState.zoom)
+    );
+
+    // Contraindre le pitch
+    constrainedViewState.pitch = Math.max(
+      INITIAL_VIEW_STATE.minPitch,
+      Math.min(INITIAL_VIEW_STATE.maxPitch, constrainedViewState.pitch)
+    );
+
+    return constrainedViewState;
+  }, []);
 
   // Préparer les données pour les flux actifs épidémiologiquement
   const flowsData = useMemo(() => {
@@ -240,7 +271,8 @@ export function FlowMap() {
       <DeckGL
         viewState={viewState}
         onViewStateChange={({ viewState: newViewState }) => {
-          setViewState(newViewState);
+          const constrainedViewState = constrainViewState(newViewState);
+          setViewState(constrainedViewState);
           handleInteraction();
         }}
         controller={{
@@ -263,14 +295,10 @@ export function FlowMap() {
         }}
       >
         <Map
+          reuseMaps
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           mapStyle="mapbox://styles/mapbox/light-v11"
-          style={{ width: '100%', height: '100%' }}
-          maxBounds={IVORY_COAST_BOUNDS}
-          renderWorldCopies={false}
-          projection="mercator"
           attributionControl={false}
-          logoPosition="bottom-right"
         />
       </DeckGL>
 
