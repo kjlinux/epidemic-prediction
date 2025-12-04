@@ -19,7 +19,7 @@
   bottom: 0;
   pointer-events: none;
   box-shadow: inset 0 0 80px 40px rgba(232, 240, 248, 0.6);
-  z-index: 1;
+  z-index: 10;
 }
 
 .map-loading {

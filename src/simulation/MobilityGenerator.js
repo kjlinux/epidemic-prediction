@@ -70,7 +70,7 @@ function getSeasonalFactor(date, origin, dest) {
   const isHolidaySeason = month === 11 || month === 0;
 
   // Migrations saisonnières vers zones agricoles
-  if (isHarvestSeason && dest.region.includes('Daloa') || dest.region.includes('Soubré')) {
+  if (isHarvestSeason && (dest.region.includes('Daloa') || dest.region.includes('Soubré'))) {
     return 1.8; // +80% de mobilité vers zones cacaoyères
   }
 

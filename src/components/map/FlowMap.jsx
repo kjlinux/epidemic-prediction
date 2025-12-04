@@ -95,12 +95,14 @@ export function FlowMap() {
       // Arrêter la rotation
       if (rotationIntervalRef.current) {
         clearInterval(rotationIntervalRef.current);
+        rotationIntervalRef.current = null;
       }
     }
 
     return () => {
       if (rotationIntervalRef.current) {
         clearInterval(rotationIntervalRef.current);
+        rotationIntervalRef.current = null;
       }
     };
   }, [isAutoRotating]);
@@ -110,9 +112,11 @@ export function FlowMap() {
     return () => {
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
       }
       if (rotationIntervalRef.current) {
         clearInterval(rotationIntervalRef.current);
+        rotationIntervalRef.current = null;
       }
     };
   }, []);
